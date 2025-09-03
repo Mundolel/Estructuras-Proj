@@ -49,19 +49,35 @@ int main(){
         }
         else if(comando=="histograma" && !parametro.empty() && extra.empty()){
             cout<<"Exito. El comando esta bien"<<endl;
-			sistema.histograma(parametro);
+			if(sistema->list_secuencia.empty(){
+				cout<<"Aun no hay secuencias cargadas"<<endl;
+			}else{
+				sistema.histograma(parametro);
+			}
         }
         else if(comando=="es_subsecuencia" && !parametro.empty() && extra.empty()){
-             cout<<"Exito. El comando esta bien"<<endl;
-			sistema.subsecuencia(parametro);
+            cout<<"Exito. El comando esta bien"<<endl;
+			if(sistema->list_secuencia.empty(){
+				cout<<"Aun no hay secuencias cargadas"<<endl;
+			}else{
+				sistema.subsecuencia(parametro);
+			}
         }
         else if(comando=="enmascarar" && !parametro.empty() && extra.empty()){
             cout<<"Exito. El comando esta bien"<<endl;
-			sistema.enmascarar(parametro);
+			if(sistema->list_secuencia.empty(){
+				cout<<"Aun no hay secuencias cargadas"<<endl;
+			}else{
+				sistema.enmascarar(parametro);
+			}
         }
         else if(comando=="guardar" && !parametro.empty() && extra.empty()){
             cout<<"Exito. El comando esta bien"<<endl;
-			sistema.guardar(parametro);
+			if(sistema->list_secuencia.empty(){
+				cout<<"Aun no hay secuencias cargadas"<<endl;
+			}else{
+				sistema.guardar(parametro);
+			}
         }
         else if(comando=="codificar" && !parametro.empty() && extra.empty()){
             cout<<"Exito. El comando esta bien"<<endl;
