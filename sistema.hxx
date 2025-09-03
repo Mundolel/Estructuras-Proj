@@ -12,18 +12,19 @@ using namespace std;
 void Sistema::cargar(std::string nombreArchivo) { // ALEJO
     list_secuencia.clear(); // sobrescribir lo anterior
 
-    std::ifstream in(nombreArchivo);
+    ifstream in(nombreArchivo);
+    
     if (!in.is_open()) {
-        std::cout<<nombreArchivo<<" no se encuentra o no se puede leer "<<std::endl;
+        cout<<nombreArchivo<<" no se encuentra o no se puede leer "<< endl;
         return;
     }
 
-    std::string linea;
+    string linea;
     Secuencia secActual;
     bool leyendoSecuencia=false;
     int anchoDetectado=0;
 
-    while (std::getline(in, linea)) {
+    while (getline(in, linea)) {
         if (linea.empty()) continue;
 
         if (linea[0]=='>') {
@@ -65,7 +66,7 @@ void Sistema::cargar(std::string nombreArchivo) { // ALEJO
     }
 }
 
-void listar(){
+void Sistema::listar(){
 
   cout<<"Hay "<<this->list_secuencia.size()<< "secuencias cargadas en memoria"<<endl;
 
@@ -283,7 +284,7 @@ void listar(){
 
 
 
-void histograma(string secuencia){
+void Sistema::histograma(string secuencia){
   
 }
 void Sistema::subsecuencia(string subsecuencia_buscada){
@@ -422,7 +423,7 @@ void Sistema::enmascarar(const std::string& subsecuencia) {
 }
 
 
-void guardar(string nombreArchivo){
+void Sistema::guardar(string nombreArchivo){
   
 }
 
