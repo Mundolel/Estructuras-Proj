@@ -3,36 +3,35 @@
 
 #include "Secuencia.h"
 
-// Implementaciones de los métodos de Secuencia
+// Constructores
+Secuencia::Secuencia()
+    : name(""), code() {
+}
 
-// Getters
-const std::string& Secuencia::getName() const {
+Secuencia::Secuencia(const string& nombre, const list<char>& bases)
+    : name(nombre), code(bases) {
+}
+
+// Getters (POR VALOR)
+string Secuencia::getName() const {
     return name;
 }
 
-std::list<char>& Secuencia::getCode() {
-    return code; // se devuelve referencia no const para poder modificar (push_back)
+list<char> Secuencia::getCode() const {
+    return code;
 }
 
-const std::list<char>& Secuencia::getCode() const {
-    return code; // versión const para solo lectura
-}
 
-int Secuencia::getAncho() const {
-    return ancho;
-}
 
-// Setters
-void Secuencia::setName(const std::string& n) {
+// Setters (reciben por VALOR)
+void Secuencia::setName(string n) {
     name = n;
 }
 
-void Secuencia::setCode(const std::list<char>& c) {
+void Secuencia::setCode(list<char> c) {
     code = c;
 }
 
-void Secuencia::setAncho(int a) {
-    ancho = a;
-}
+
 
 #endif

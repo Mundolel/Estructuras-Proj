@@ -6,23 +6,26 @@
 
 using namespace std;
 
-class Secuencia{
+class Secuencia {
+private:
+    string name;
+    list<char> code;
+    
 
-  private:
-  string name;
-  list<char> code;
-  int ancho;
+public:
+    // constructores
+    Secuencia();
+    Secuencia(const string& nombre, const list<char>& bases);
 
-  public:
-  Secuencia();
-  Secuencia(const std::string& nombre, const std::list<char>& bases, int w);
-  string getName();
-  void setName();
-  list<char> getCode();
-  void setCode();
-  int getAncho();
-  void setAncho();
+    // getters (por valor, no por referencia)
+    string getName() const;
+    list<char> getCode() const;
+    
 
+    // setters (reciben por valor)
+    void setName(string n);
+    void setCode(list<char> c);
+    
 };
 
 #include "Secuencia.hxx"

@@ -10,7 +10,7 @@ using namespace std;
 
 
 void Sistema::cargar(std::string nombreArchivo) { // ALEJO
-    list_secuencia.clear(); // sobrescribir lo anterior
+    list_secuencia.clear(); // borrar lo anterior
 
     std::ifstream in(nombreArchivo);
     if (!in.is_open()) {
@@ -21,7 +21,7 @@ void Sistema::cargar(std::string nombreArchivo) { // ALEJO
     std::string linea;
     Secuencia secActual;
     bool leyendoSecuencia=false;
-    int anchoDetectado=0;
+    //int anchoDetectado=0;
 
     while (std::getline(in, linea)) {
         if (linea.empty()) continue;
@@ -29,7 +29,7 @@ void Sistema::cargar(std::string nombreArchivo) { // ALEJO
         if (linea[0]=='>') {
             // Guardar secuencia previa si esq ya habia
             if (leyendoSecuencia) {
-                secActual.setAncho(anchoDetectado);
+                //secActual.setAncho(anchoDetectado);
                 list_secuencia.push_back(secActual);
             }
 
@@ -37,20 +37,24 @@ void Sistema::cargar(std::string nombreArchivo) { // ALEJO
             secActual=Secuencia();
             secActual.setName(linea.substr(1)); // quitar '>'
             leyendoSecuencia=true;
-            anchoDetectado=0;
+            //anchoDetectado=0;
         } else {
             // Línea de bases
-            if (anchoDetectado==0) anchoDetectado=linea.size();
+            //if (anchoDetectado==0) anchoDetectado=linea.size(); CAMBIOS POR REVISAR
             for (char c : linea) {
                 // guardar letra en la lista de bases
                 secActual.getCode().push_back(c);
+				secActual.getCode().push_back('*'); 
+				/*
+					Tratamos de diferenciar los saltos de línea poniendo "*" en el arreglo de chars.
+				*/
             }
         }
     }
 
     // Guardar la última
     if (leyendoSecuencia) {
-        secActual.setAncho(anchoDetectado);
+        //secActual.setAncho(anchoDetectado); REVISAR CAMBIOS
         list_secuencia.push_back(secActual);
     }
 
@@ -60,6 +64,7 @@ void Sistema::cargar(std::string nombreArchivo) { // ALEJO
         std::cout<<nombreArchivo<<" no contiene ninguna secuencia."<<std::endl;
     } else if (list_secuencia.size() == 1) {
         std::cout<<"1 secuencia cargada correctamente desde "<<nombreArchivo<<"."<<std::endl;
+		// este else es innecesario, por que se implementó?
     } else {
         std::cout<<list_secuencia.size()<<"secuencias cargadas correctamente desde " <<nombreArchivo<< "."<<std::endl;
     }
@@ -287,7 +292,7 @@ void histograma(string secuencia){
   
 }
 void Sistema::subsecuencia(string subsecuencia_buscada){
-     """
+     /*
     Pasos:
         Verificar si hay secuencias cargadas (si no, mostrar mensaje y terminar)
         Iterar la lista de secuencias del sistema
@@ -295,7 +300,7 @@ void Sistema::subsecuencia(string subsecuencia_buscada){
         Contar el número total de apariciones (no imprimir por secuencia)
         Repetir hasta acabar las secuencias del sistema
         Mostrar resultado final: según el conteo total (0 = no existe, >0 = se repite X veces)
-    """
+    */
 
     // Verificar si hay secuencias cargadas
     if(this->list_secuencia.empty()){
