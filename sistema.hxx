@@ -8,15 +8,68 @@
 
 using namespace std;
 
-void cargar (string nombreArchvio){
-  
+
+void Sistema::cargar(std::string nombreArchivo) { // ALEJO
+    list_secuencia.clear(); // sobrescribir lo anterior
+
+    std::ifstream in(nombreArchivo);
+    if (!in.is_open()) {
+        std::cout<<nombreArchivo<<" no se encuentra o no se puede leer "<<std::endl;
+        return;
+    }
+
+    std::string linea;
+    Secuencia secActual;
+    bool leyendoSecuencia=false;
+    int anchoDetectado=0;
+
+    while (std::getline(in, linea)) {
+        if (linea.empty()) continue;
+
+        if (linea[0]=='>') {
+            // Guardar secuencia previa si esq ya habia
+            if (leyendoSecuencia) {
+                secActual.setAncho(anchoDetectado);
+                list_secuencia.push_back(secActual);
+            }
+
+            // Nueva secuencia
+            secActual=Secuencia();
+            secActual.setName(linea.substr(1)); // quitar '>'
+            leyendoSecuencia=true;
+            anchoDetectado=0;
+        } else {
+            // Línea de bases
+            if (anchoDetectado==0) anchoDetectado=linea.size();
+            for (char c : linea) {
+                // guardar letra en la lista de bases
+                secActual.getCode().push_back(c);
+            }
+        }
+    }
+
+    // Guardar la última
+    if (leyendoSecuencia) {
+        secActual.setAncho(anchoDetectado);
+        list_secuencia.push_back(secActual);
+    }
+
+    in.close();
+
+    if (list_secuencia.empty()) {
+        std::cout<<nombreArchivo<<" no contiene ninguna secuencia."<<std::endl;
+    } else if (list_secuencia.size() == 1) {
+        std::cout<<"1 secuencia cargada correctamente desde "<<nombreArchivo<<"."<<std::endl;
+    } else {
+        std::cout<<list_secuencia.size()<<"secuencias cargadas correctamente desde " <<nombreArchivo<< "."<<std::endl;
+    }
 }
 
 void listar(){
 
   cout<<"Hay "<<this->list_secuencia.size()<< "secuencias cargadas en memoria"<<endl;
 
-  list<Secuencia> ::iterator it=*this->list_secuencias.begin();
+  list<Secuencia> ::iterator it=*this->list_secuencias.begin(); // MOST IMPORTANT VARIABLE!!
 
   //Recorre cada secuencia 
   for(;it!=*this.list_secuencias.end();it++){
@@ -439,7 +492,17 @@ void histograma(string secuencia){
   
 }
 void subsecuencia(string subsecuencia){
-  
+    cout<<"Hay "<<this->list_secuencia.size()<< "secuencias cargadas en memoria"<<endl;
+
+    """
+    Pasos:
+        1. Iterar la lista de secuencias del sistema
+        2. Buscar en cada secuencia dentro de su arreglo 'code' la subsecuencia
+        3. Hacer print de si se encuenctra la subsecuencia o no en esa secuencia.
+        4. Repetir hasta acabar las secuencias del sistema
+    """
+    list<Secuencia>::iterator it = this->list_secuencias.begin();
+
 }
 void enmascarar(string subsecuencia){
   
