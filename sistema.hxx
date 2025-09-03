@@ -13,7 +13,7 @@ Sistema() {
         list_secuencia.clear(); // la deja vacía
     }
 
-bool estaVacio const {
+bool Sistema::estaVacio const {
         return list_secuencia.empty();
     }
 
