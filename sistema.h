@@ -14,6 +14,7 @@ class Sistema{
 
   public:
 
+  Sistema();
   void cargar (string nombreArchvio);
   void listar();
   void histograma(string secuencia);
