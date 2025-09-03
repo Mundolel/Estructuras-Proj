@@ -12,7 +12,8 @@ using namespace std;
 Sistema() {
         list_secuencia.clear(); // la deja vacía
     }
-bool estaVacia const {
+
+bool estaVacio const {
         return list_secuencia.empty();
     }
 
