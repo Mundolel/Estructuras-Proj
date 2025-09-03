@@ -10,22 +10,22 @@ class Secuencia {
 private:
     string name;
     list<char> code;
-    
+    int ancho;   // definido por el usuario
 
 public:
-    // constructores
-    Secuencia();
-    Secuencia(const string& nombre, const list<char>& bases);
+    // Constructores
+    Secuencia(); 
+    Secuencia(const string& nombre, const list<char>& bases, int a); }
 
-    // getters (por valor, no por referencia)
+    // Getters
     string getName() const;
     list<char> getCode() const;
-    
+    int getAncho() const;
 
-    // setters (reciben por valor)
+    // Setters
     void setName(string n);
     void setCode(list<char> c);
-    
+    void setAncho(int a);
 };
 
 #include "secuencia.hxx"
