@@ -12,25 +12,24 @@ using namespace std;
 void Sistema::cargar(std::string nombreArchivo) { // ALEJO
     list_secuencia.clear(); // borrar lo anterior
 
-    ifstream in(nombreArchivo);
-    
+    std::ifstream in(nombreArchivo);
     if (!in.is_open()) {
-        cout<<nombreArchivo<<" no se encuentra o no se puede leer "<< endl;
+        std::cout<<nombreArchivo<<" no se encuentra o no se puede leer "<<std::endl;
         return;
     }
 
-    string linea;
+    std::string linea;
     Secuencia secActual;
     bool leyendoSecuencia=false;
-    //int anchoDetectado=0;
+    
 
-    while (getline(in, linea)) {
+    while (std::getline(in, linea)) {
         if (linea.empty()) continue;
 
         if (linea[0]=='>') {
             // Guardar secuencia previa si esq ya habia
             if (leyendoSecuencia) {
-                //secActual.setAncho(anchoDetectado);
+                
                 list_secuencia.push_back(secActual);
             }
 
@@ -38,10 +37,10 @@ void Sistema::cargar(std::string nombreArchivo) { // ALEJO
             secActual=Secuencia();
             secActual.setName(linea.substr(1)); // quitar '>'
             leyendoSecuencia=true;
-            //anchoDetectado=0;
+            
         } else {
             // Línea de bases
-            //if (anchoDetectado==0) anchoDetectado=linea.size(); CAMBIOS POR REVISAR
+            
             for (char c : linea) {
                 // guardar letra en la lista de bases
                 secActual.getCode().push_back(c);
@@ -55,7 +54,7 @@ void Sistema::cargar(std::string nombreArchivo) { // ALEJO
 
     // Guardar la última
     if (leyendoSecuencia) {
-        //secActual.setAncho(anchoDetectado); REVISAR CAMBIOS
+        
         list_secuencia.push_back(secActual);
     }
 
@@ -71,7 +70,7 @@ void Sistema::cargar(std::string nombreArchivo) { // ALEJO
     }
 }
 
-void Sistema::listar(){
+void listar(){
 
   cout<<"Hay "<<this->list_secuencia.size()<< "secuencias cargadas en memoria"<<endl;
 
@@ -289,7 +288,7 @@ void Sistema::listar(){
 
 
 
-void Sistema::histograma(string secuencia){
+void histograma(string secuencia){
   
 }
 void Sistema::subsecuencia(string subsecuencia_buscada){
@@ -428,7 +427,7 @@ void Sistema::enmascarar(const std::string& subsecuencia) {
 }
 
 
-void Sistema::guardar(string nombreArchivo){
+void guardar(string nombreArchivo){
   
 }
 
