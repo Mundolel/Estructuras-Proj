@@ -15,6 +15,7 @@ class Sistema{
   public:
 
   Sistema();
+  bool estaVacio();
   void cargar (string nombreArchvio);
   void listar();
   void histograma(string secuencia);
