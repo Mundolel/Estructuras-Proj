@@ -41,7 +41,7 @@ int main(){
         }
         else if(comando=="listar_secuencias" && parametro.empty()){
             cout<<"Exito. El comando esta bien"<<endl;
-			if(sistema->list_secuencia.empty(){
+			if(sistema.estaVacio(){
 				cout<<"Aun no hay secuencias cargadas"<<endl;
 			}else{
 				sistema.listar();
@@ -49,7 +49,7 @@ int main(){
         }
         else if(comando=="histograma" && !parametro.empty() && extra.empty()){
             cout<<"Exito. El comando esta bien"<<endl;
-			if(sistema->list_secuencia.empty(){
+			if(sistema.estaVacio(){
 				cout<<"Aun no hay secuencias cargadas"<<endl;
 			}else{
 				sistema.histograma(parametro);
@@ -57,7 +57,7 @@ int main(){
         }
         else if(comando=="es_subsecuencia" && !parametro.empty() && extra.empty()){
             cout<<"Exito. El comando esta bien"<<endl;
-			if(sistema->list_secuencia.empty(){
+			if(sistema.estaVacio(){
 				cout<<"Aun no hay secuencias cargadas"<<endl;
 			}else{
 				sistema.subsecuencia(parametro);
@@ -65,7 +65,7 @@ int main(){
         }
         else if(comando=="enmascarar" && !parametro.empty() && extra.empty()){
             cout<<"Exito. El comando esta bien"<<endl;
-			if(sistema->list_secuencia.empty(){
+			if(sistema.estaVacio(){
 				cout<<"Aun no hay secuencias cargadas"<<endl;
 			}else{
 				sistema.enmascarar(parametro);
@@ -73,7 +73,7 @@ int main(){
         }
         else if(comando=="guardar" && !parametro.empty() && extra.empty()){
             cout<<"Exito. El comando esta bien"<<endl;
-			if(sistema->list_secuencia.empty(){
+			if(sistema.estaVacio(){
 				cout<<"Aun no hay secuencias cargadas"<<endl;
 			}else{
 				sistema.guardar(parametro);
