@@ -12,6 +12,9 @@ using namespace std;
 Sistema() {
         list_secuencia.clear(); // la deja vacía
     }
+bool estaVacia const {
+        return list_secuencia.empty();
+    }
 
 void Sistema::cargar(std::string nombreArchivo) { 
     list_secuencia.clear(); // borrar lo anterior
