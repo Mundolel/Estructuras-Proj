@@ -491,19 +491,71 @@ void listar(){
 void histograma(string secuencia){
   
 }
-void subsecuencia(string subsecuencia){
-    cout<<"Hay "<<this->list_secuencia.size()<< "secuencias cargadas en memoria"<<endl;
-
-    """
+void Sistema::subsecuencia(string subsecuencia_buscada){
+     """
     Pasos:
-        1. Iterar la lista de secuencias del sistema
-        2. Buscar en cada secuencia dentro de su arreglo 'code' la subsecuencia
-        3. Hacer print de si se encuenctra la subsecuencia o no en esa secuencia.
-        4. Repetir hasta acabar las secuencias del sistema
+        Verificar si hay secuencias cargadas (si no, mostrar mensaje y terminar)
+        Iterar la lista de secuencias del sistema
+        Buscar en cada secuencia dentro de su arreglo 'code' la subsecuencia
+        Contar el número total de apariciones (no imprimir por secuencia)
+        Repetir hasta acabar las secuencias del sistema
+        Mostrar resultado final: según el conteo total (0 = no existe, >0 = se repite X veces)
     """
-    list<Secuencia>::iterator it = this->list_secuencias.begin();
-
+    
+    // Verificar si hay secuencias cargadas
+    if(this->list_secuencia.empty()){
+        cout << "No hay secuencias cargadas en memoria." << endl;
+        return;
+    }
+    
+    cout << "Hay " << this->list_secuencia.size() << " secuencias cargadas en memoria" << endl;
+    
+    int conteo_total = 0;
+    int longitud_busqueda = subsecuencia_buscada.length();
+    
+    // Iterar sobre todas las secuencias cargadas
+    list<Secuencia>::iterator it = this->list_secuencia.begin();
+    for(; it != this->list_secuencia.end(); ++it){
+        
+        // Buscar directamente en la lista de chars sin convertir a string
+        list<char>::iterator code_it = it->getCode().begin();
+        
+        // Mientras tengamos suficientes caracteres para una posible coincidencia
+        while(code_it != it->getCode().end()){
+            
+            // Verificar si desde esta posición coincide la subsecuencia
+            list<char>::iterator temp_it = code_it;
+            int i = 0;
+            bool coincide = true;
+            
+            // Comparar caracter por caracter
+            while(i < longitud_busqueda && temp_it != it->getCode().end()){
+                if(*temp_it != subsecuencia_buscada[i]){
+                    coincide = false;
+                    break;
+                }
+                ++temp_it;
+                ++i;
+            }
+            
+            // Si llegamos al final de la subsecuencia buscada, encontramos una coincidencia
+            if(coincide && i == longitud_busqueda){
+                conteo_total++;
+            }
+            
+            // Avanzar al siguiente caracter para buscar solapamientos
+            ++code_it;
+        }
+    }
+    
+    // Mostrar resultado según el conteo
+    if(conteo_total == 0){
+        cout << "La subsecuencia dada no existe dentro de las secuencias cargadas en memoria." << endl;
+    } else {
+        cout << "La subsecuencia dada se repite " << conteo_total << " veces dentro de las secuencias cargadas en memoria." << endl;
+    }
 }
+
 void enmascarar(string subsecuencia){
   
 }
