@@ -10,12 +10,12 @@ class Secuencia {
 private:
     string name;
     list<char> code;
-    int ancho;   // definido por el usuario
+    int ancho;
 
 public:
     // Constructores
     Secuencia(); 
-    Secuencia(const string& nombre, const list<char>& bases, int a); }
+    Secuencia(string nombre, list<char> bases, int a);
 
     // Getters
     string getName() const;
