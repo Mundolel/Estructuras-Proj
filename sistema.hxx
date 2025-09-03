@@ -13,7 +13,7 @@ Sistema::Sistema() {
         list_secuencia.clear(); // la deja vacía
     }
 
-bool Sistema::estaVacio() const {
+bool Sistema::estaVacio() {
         return list_secuencia.empty();
     }
 
@@ -36,7 +36,7 @@ void Sistema::cargar(std::string nombreArchivo) {
     
     while (getline(in, linea)) {
 		
-        if (linea.empty(){
+        if (linea.empty()){
 			cout<<"Hay una linea vacia, no se pudo cargar"<<endl;
 			return;
 		}
@@ -51,12 +51,13 @@ void Sistema::cargar(std::string nombreArchivo) {
             // Nueva secuencia
             secActual=Secuencia();
             secActual.setName(linea.substr(1)); // quitar '>' para guardar el nombre
+			cout<<"Se va a leer: "<<secActual.getName()<<endl; // DEBUG
             leyendoSecuencia=true;
 			bases_actuales.clear();
 			anchoDetectado=linea.size();
             
         }else if(linea[0]!='>' && leyendoSecuencia==false){
-			cout<<"El archivo no tiene el formato requerido");
+			cout<<"El archivo no tiene el formato requerido";
 			return;
 		}else{
             // Línea de bases
@@ -120,239 +121,227 @@ void Sistema::cargar(std::string nombreArchivo) {
 }
 
 
-/*
-void listar(){
 
-  cout<<"Hay "<<this->list_secuencia.size()<< "secuencias cargadas en memoria"<<endl;
+void Sistema::listar(){
 
-  list<Secuencia> ::iterator it=this->list_secuencias.begin(); // MOST IMPORTANT VARIABLE!!
+    std::cout << "Hay " << this->list_secuencia.size() << " secuencias cargadas en memoria" << std::endl;
 
-  //Recorre cada secuencia 
-  for(;it!=this->list_secuencias.end();it++){
+    std::list<Secuencia>::iterator it = this->list_secuencia.begin(); // iterador sobre secuencias
 
-    bool completa=true;
-    bool codigo[17]={false};
-    bool hayPricipales=false;
-    list<char> ::iterator it2=it->getCode().begin();
-    int cant=it->code.size();
-      
-    //Primer Recorrido del codigo de cada secuencia
-    for(; it2!=it->getCode.end(); it2++){
-        if(*it2=='A'){
-          codigo[0]=true;
-        }
-        if(*it2=='C'){
-          codigo[1]=true;
-        }
-        if(*it2=='G'){
-          codigo[2]=true;
-        }
-        if(*it2=='T'){
-          codigo[3]=true;
-        }
-       if(*it2=='U'){
-         codigo[4]=true;
-        }
-    }
+    // Recorre cada secuencia
+    for (; it != this->list_secuencia.end(); ++it) {
 
-      //Revisa
-      if(codigo[0] || codigo[1] || codigo[2] || codigo [3] || codigo[4]){
-          hayPrincipales=true;
-      }
+        bool completa = true;
+        bool codigo[18] = { false }; // índices 0..17 (0..4 primarias, 5..16 ambig, 17 = '-')
+        bool hayPrincipales = false;
 
-      vector<vector<char>> matriz;
-      list<char> ::iterator it3=it->getCode.begin();
-      
-    //Segundo recorrido
-      for(; it3!=it->getCode.end(); it3++){
-		  
-        if(*it3=='R'){
-            completa=false;
-            if(!codigo[0] && !codigo[2]){
-                  if(!hayPrincipales){
-                     matriz.push_back({'A','G'});
-                  }else{
-                      codigo[5]=true;
-                  }
-            }
-        }
-        if(*it3=='Y'){
-            completa=false;
-            if(!codigo[1] && !codigo[3] && !codigo[4]){
-                if(!hayPrincipales){
-                     matriz.push_back({'C','T','U'});
-                  }else{
-                      codigo[6]=true;
-                  }
-            }
-        }
-        if(*it[i]=='K'){
-             completa=false;
-            if(!codigo[3] && !codigo[4] && !codigo[2]){
-                if(!hayPrincipales){
-                     matriz.push_back({'T','G','U'});
-                }else{
-                 codigo[7]=true;
-                }
-            }
-        }
-        if(*it[i]=='M'){
-             completa=false;
-            if(!codigo[0] && !codigo[1]){
-                if(!hayPrincipales){
-                     matriz.push_back({'A','C'});
-                }else{
-                 codigo[8]=true;
-                }
-            }    
-        }
-        if(*it[i]=='S'){ 
-            completa=false;
-            if( !codigo[1] && !codigo[2]){
-                if(!hayPrincipales){
-                     matriz.push_back({'G','C'});
-                }else{
-                 codigo[9]=true;
-                }
-            }
-        }
-        if(*it[i]=='W'){
-            completa=false;
-            if(!codigo[0] && !codigo[3] && !codigo[4]){
-                if(!hayPrincipales){
-                    matriz.push_back({'A','T','U'});
-                }else{
-                    codigo[10]=true;
-                }
-            }
-        }
-        if(*it[i]=='B'){
-            completa=false;
-            if(!codigo[1] && !codigo[2] && !codigo[3] && !codigo[4]){
-                if(!hayPrincipales){
-                    matriz.push_back({'C','G','T','U'});
-                }else{
-                    codigo[11]=true;
-                }
-            }
-        }
-        if(*it[i]=='D'){
-            completa=false;
-            if(!codigo[0] && !codigo[2] && !codigo[3] && !codigo[4]){
-                if(!hayPrincipales){
-                    matriz.push_back({'A','G','T','U'});
-                }else{
-                    codigo[12]=true;
-                }
-            }
-        }
-        if(*it[i]=='H'){
-            completa=false;
-            if(!codigo[0] && !codigo[1] && !codigo[3] && !codigo[4]){
-                if(!hayPrincipales){
-                    matriz.push_back({'A','C','T','U'});
-                }else{
-                    codigo[13]=true;
-                }
-            }
-        }
-        if(*it[i]=='V'){
-            completa=false;
-            if(!codigo[0] && !codigo[1] && !codigo[2]){
-                if(!hayPrincipales){
-                    matriz.push_back({'A','C','G'});
-                }else{
-                    codigo[14]=true;
-                }
-            }
-        }
-        if(*it[i]=='N'){
-            completa=false;
-                if(!hayPrincipales){
-                    matriz.push_back({'A','C','G','T','U'});
-					codigo[15]=true;
-                }
-        }
-		if(*it[i]=='X'){
-            completa=false;
-                if(!hayPrincipales){
-                    matriz.push_back({'A','C','G','T','U'});
-					codigo[16]=true;
-                }
-        }
-		  if(*it[i]=='-'){
-            completa=false;
-                if(!hayPrincipales){
-                    matriz.push_back({'A','C','G','T','U'});
-					codigo[17]=true;
-                }
-        }
-		  
-	}
-      //Si todos los principales estan falsos se procede a analizar la matriz 
-      if(!hayPrincipales){
-          
-        int cont[5]={0};
-        int contador=0;
-        int suma=0;
+        // COPIA local del code para evitar temporales si getCode() devuelve por valor
+        std::list<char> codigoList = it->getCode();
+        std::list<char>::iterator it2 = codigoList.begin();
+        int cant = static_cast<int>(codigoList.size());
 
-          for (int i = 0; i < matriz.size(); ++i) {
-              for (int j = 0; j < matriz[i].size(); ++j) {
-                  if(matriz[i][j]=='A'){
-                      cont[0]++;
-                  }
-                  if(matriz[i][j]=='G'){
-                        cont[1]++;
+        // Primer recorrido: detectar si hay bases primarias A,C,G,T,U
+        for (; it2 != codigoList.end(); ++it2) {
+            char ch = *it2;
+            if (ch == 'A') codigo[0] = true;
+            if (ch == 'C') codigo[1] = true;
+            if (ch == 'G') codigo[2] = true;
+            if (ch == 'T') codigo[3] = true;
+            if (ch == 'U') codigo[4] = true;
+        }
+
+        // Revisa si hay alguna primaria
+        if (codigo[0] || codigo[1] || codigo[2] || codigo[3] || codigo[4]) {
+            hayPrincipales = true;
+        }
+
+        // Matriz de posibilidades para cuando NO hay primarias
+        std::vector<std::vector<char>> matriz;
+        std::list<char>::iterator it3 = codigoList.begin();
+
+        // Segundo recorrido: analizar códigos IUPAC y llenar matriz o marcar codigo[]
+        for (; it3 != codigoList.end(); ++it3) {
+            char ch = *it3;
+
+            if (ch == 'R') {
+                completa = false;
+                if (!codigo[0] && !codigo[2]) {
+                    if (!hayPrincipales) {
+                        matriz.push_back(std::vector<char>{'A','G'});
+                    } else {
+                        codigo[5] = true;
                     }
-                  if(matriz[i][j]=='C'){
-                      cont[2]++;
-                  }
-                  if(matriz[i][j]=='T'){
-                        cont[3]++;
+                }
+            } else if (ch == 'Y') {
+                completa = false;
+                if (!codigo[1] && !codigo[3] && !codigo[4]) {
+                    if (!hayPrincipales) {
+                        matriz.push_back(std::vector<char>{'C','T','U'});
+                    } else {
+                        codigo[6] = true;
                     }
-                  if(matriz[i][j]=='U'){
-                        cont[4]++;
+                }
+            } else if (ch == 'K') {
+                completa = false;
+                if (!codigo[3] && !codigo[4] && !codigo[2]) {
+                    if (!hayPrincipales) {
+                        matriz.push_back(std::vector<char>{'T','G','U'});
+                    } else {
+                        codigo[7] = true;
                     }
-              }
-          }
-          //ordeno 
-          for(int i = 0; i < 5-1; i++){
-              for(int j = 0; j < 5-i-1; j++){
-                  if(cont[j] < cont[j+1]){
-                      // intercambio
-                      int temp = cont[j];
-                      cont[j] = cont[j+1];
-                      cont[j+1] = temp;
-                  }
-              }
-          }
-            //no se si es menor
-          for(int z=0;z<5 && suma<cant ;z++){
-              if(cont[z]!=0){
-                  suma=suma+cont[z];
-                  contador++;
-              }
-          }
-          cout << "Secuencia " << it->getName << " contiene al menos " << contador << " bases." << endl;
-      }else{
-          int diferentes = 0;
-          for(int k=0;k<17;++k){ 
-              if(codigo[k]) diferentes++;
-          }
-          if(completa){
-                cout << "Secuencia " << it->getName << " contiene " << diferentes << " bases." << endl;
-          }else{
-              cout << "Secuencia " << it->getName << " contiene al menos " << diferentes << " bases." << endl;
-          }
-      }
-  }
+                }
+            } else if (ch == 'M') {
+                completa = false;
+                if (!codigo[0] && !codigo[1]) {
+                    if (!hayPrincipales) {
+                        matriz.push_back(std::vector<char>{'A','C'});
+                    } else {
+                        codigo[8] = true;
+                    }
+                }
+            } else if (ch == 'S') {
+                completa = false;
+                if (!codigo[1] && !codigo[2]) {
+                    if (!hayPrincipales) {
+                        matriz.push_back(std::vector<char>{'G','C'});
+                    } else {
+                        codigo[9] = true;
+                    }
+                }
+            } else if (ch == 'W') {
+                completa = false;
+                if (!codigo[0] && !codigo[3] && !codigo[4]) {
+                    if (!hayPrincipales) {
+                        matriz.push_back(std::vector<char>{'A','T','U'});
+                    } else {
+                        codigo[10] = true;
+                    }
+                }
+            } else if (ch == 'B') {
+                completa = false;
+                if (!codigo[1] && !codigo[2] && !codigo[3] && !codigo[4]) {
+                    if (!hayPrincipales) {
+                        matriz.push_back(std::vector<char>{'C','G','T','U'});
+                    } else {
+                        codigo[11] = true;
+                    }
+                }
+            } else if (ch == 'D') {
+                completa = false;
+                if (!codigo[0] && !codigo[2] && !codigo[3] && !codigo[4]) {
+                    if (!hayPrincipales) {
+                        matriz.push_back(std::vector<char>{'A','G','T','U'});
+                    } else {
+                        codigo[12] = true;
+                    }
+                }
+            } else if (ch == 'H') {
+                completa = false;
+                if (!codigo[0] && !codigo[1] && !codigo[3] && !codigo[4]) {
+                    if (!hayPrincipales) {
+                        matriz.push_back(std::vector<char>{'A','C','T','U'});
+                    } else {
+                        codigo[13] = true;
+                    }
+                }
+            } else if (ch == 'V') {
+                completa = false;
+                if (!codigo[0] && !codigo[1] && !codigo[2]) {
+                    if (!hayPrincipales) {
+                        matriz.push_back(std::vector<char>{'A','C','G'});
+                    } else {
+                        codigo[14] = true;
+                    }
+                }
+            } else if (ch == 'N') {
+                completa = false;
+                if (!hayPrincipales) {
+                    matriz.push_back(std::vector<char>{'A','C','G','T','U'});
+                    codigo[15] = true;
+                } else {
+                    codigo[15] = true;
+                }
+            } else if (ch == 'X') {
+                completa = false;
+                if (!hayPrincipales) {
+                    matriz.push_back(std::vector<char>{'A','C','G','T','U'});
+                    codigo[16] = true;
+                } else {
+                    codigo[16] = true;
+                }
+            } else if (ch == '-') {
+                completa = false;
+                if (!hayPrincipales) {
+                    matriz.push_back(std::vector<char>{'A','C','G','T','U'});
+                    codigo[17] = true;
+                } else {
+                    codigo[17] = true;
+                }
+            }
+        } // fin segundo recorrido
+
+        // Si no hay bases primarias detectadas, usar matriz para estimar mínimo
+        if (!hayPrincipales) {
+
+            int cont[5] = {0,0,0,0,0};
+            int contador = 0;
+            int suma = 0;
+
+            for (int ii = 0; ii < static_cast<int>(matriz.size()); ++ii) {
+                for (int jj = 0; jj < static_cast<int>(matriz[ii].size()); ++jj) {
+                    char cc = matriz[ii][jj];
+                    if (cc == 'A') cont[0]++;
+                    if (cc == 'G') cont[1]++;
+                    if (cc == 'C') cont[2]++;
+                    if (cc == 'T') cont[3]++;
+                    if (cc == 'U') cont[4]++;
+                }
+            }
+
+            // ordeno cont[] de mayor a menor (bubble sort)
+            for (int ii = 0; ii < 5 - 1; ++ii) {
+                for (int jj = 0; jj < 5 - ii - 1; ++jj) {
+                    if (cont[jj] < cont[jj + 1]) {
+                        int temp = cont[jj];
+                        cont[jj] = cont[jj + 1];
+                        cont[jj + 1] = temp;
+                    }
+                }
+            }
+
+            // sumo hasta cubrir la longitud (cant)
+            for (int z = 0; z < 5 && suma < cant; ++z) {
+                if (cont[z] != 0) {
+                    suma = suma + cont[z];
+                    ++contador;
+                }
+            }
+
+            std::cout << "Secuencia " << it->getName() << " contiene al menos " << contador << " bases." << std::endl;
+
+        } else {
+            int diferentes = 0;
+			// contar sólo bases primarias (A,C,G,T,U) — índices 0..4
+			for (int k = 0; k < 5; ++k) {
+				if (codigo[k]) ++diferentes;
+			}
+
+			if (completa) {
+				std::cout << "Secuencia " << it->getName() << " contiene " << diferentes << " bases." << std::endl;
+			} else {
+				std::cout << "Secuencia " << it->getName() << " contiene al menos " << diferentes << " bases." << std::endl;
+			}
+
+        }
+
+    } // fin for secuencias
 }
 
-void histograma(string secuencia){
+void Sistema::histograma(string secuencia){
   
 }
-void Sistema::subsecuencia(string subsecuencia_buscada){
-     
+void Sistema::subsecuencia(string subsecuencia_buscada){ // compaginar con definición en el header
+     /*
     Pasos:
         Verificar si hay secuencias cargadas (si no, mostrar mensaje y terminar)
         Iterar la lista de secuencias del sistema
@@ -360,7 +349,7 @@ void Sistema::subsecuencia(string subsecuencia_buscada){
         Contar el número total de apariciones (no imprimir por secuencia)
         Repetir hasta acabar las secuencias del sistema
         Mostrar resultado final: según el conteo total (0 = no existe, >0 = se repite X veces)
-    
+    */
 
     // Verificar si hay secuencias cargadas
     if(this->list_secuencia.empty()){
@@ -416,67 +405,64 @@ void Sistema::subsecuencia(string subsecuencia_buscada){
     }
 }
 
-void Sistema::enmascarar(const std::string& subsecuencia) {
+// firma debe coincidir con la declarada en Sistema.h
+void Sistema::enmascarar(std::string subsecuencia) {
     if (this->list_secuencia.empty()) {
         std::cout << "No hay secuencias cargadas en memoria." << std::endl;
         return;
     }
-
     if (subsecuencia.empty()) {
         std::cout << "La subsecuencia dada está vacía; no se enmascara nada." << std::endl;
         return;
     }
 
     int totalEnmascaradas = 0;
-    size_t L = subsecuencia.length();
+    std::size_t L = subsecuencia.length();
 
-    // Iterar secuencias (sin usar auto)
     std::list<Secuencia>::iterator itSeq;
     for (itSeq = this->list_secuencia.begin(); itSeq != this->list_secuencia.end(); ++itSeq) {
-        std::list<char>& codigo = itSeq->getCode();
+        // trabajar sobre una copia (porque getCode() devuelve por valor)
+        std::list<char> codigo = itSeq->getCode();
+        if (codigo.size() < L) {
+            // si la copia es menor que la subsecuencia, nada que hacer
+            continue;
+        }
 
-        if (codigo.size() < L) continue;
-
-        // Recolectar inicios de coincidencias en esta secuencia
-        std::vector<std::list<char>::iterator> inicios;
-        std::list<char>::iterator it;
-        for (it = codigo.begin(); it != codigo.end(); ++it) {
+        // iterador principal sobre la copia
+        std::list<char>::iterator it = codigo.begin();
+        while (it != codigo.end()) {
+            // intentar comparar subsecuencia desde 'it'
             std::list<char>::iterator temp = it;
-            size_t i = 0;
+            std::size_t i = 0;
             bool coincide = true;
-
-            // comparar carácter por carácter con la subsecuencia (sin crear strings)
             while (i < L) {
-                if (temp == codigo.end()) { 
-                    coincide = false;
-                    break;
-                }
-                if (*temp != subsecuencia[i]) {
-                    coincide = false;
-                    break;
-                }
-                ++temp;
-                ++i;
+                if (temp == codigo.end()) { coincide = false; break; }
+                if (*temp != subsecuencia[i]) { coincide = false; break; }
+                ++temp; ++i;
             }
+
             if (coincide && i == L) {
-                inicios.push_back(it);
+                // enmascarar L caracteres desde it
+                temp = it;
+                for (std::size_t k = 0; k < L; ++k) {
+                    *temp = 'X';
+                    ++temp;
+                }
+                ++totalEnmascaradas;
+
+                // avanzar el iterador principal L pasos (evitar solapamientos)
+                for (std::size_t k = 0; k < L && it != codigo.end(); ++k) ++it;
+            } else {
+                // no coincide -> avanzar 1
+                ++it;
             }
         }
 
-        // Enmascarar todas las apariciones encontradas
-        std::vector<std::list<char>::iterator>::iterator vit;
-        for (vit = inicios.begin(); vit != inicios.end(); ++vit) {
-            std::list<char>::iterator startIt = *vit;
-            std::list<char>::iterator temp = startIt;
-            for (size_t k = 0; k < L; ++k) {
-                *temp = 'X';
-                ++temp;
-            }
-            ++totalEnmascaradas;
-        }
+        // guardar la copia modificada de vuelta en la secuencia
+        itSeq->setCode(codigo);
     }
 
-    // Mensajes según el resultado
+    // mensajes finales (igual que antes)
     if (totalEnmascaradas == 0) {
         std::cout << "La subsecuencia dada no existe dentro de las secuencias cargadas en memoria, por tanto no se enmascara nada." << std::endl;
     } else if (totalEnmascaradas == 1) {
@@ -486,8 +472,8 @@ void Sistema::enmascarar(const std::string& subsecuencia) {
     }
 }
 
-*/
-void guardar(string nombreArchivo){
+
+void Sistema::guardar(string nombreArchivo){
   
 }
 
