@@ -17,7 +17,7 @@ bool Sistema::estaVacio() const {
         return list_secuencia.empty();
     }
 
-void Sistema::cargar(std::string nombreArchivo) { 
+void Sistema::cargar(std::string nombreArchivo) {
     list_secuencia.clear(); // borrar lo anterior
 
     ifstream in;
@@ -31,28 +31,35 @@ void Sistema::cargar(std::string nombreArchivo) {
     Secuencia secActual;
     bool leyendoSecuencia=false;
 	list<char> bases_actuales;
-    
+	int anchoDetectado=0;
 
+    
     while (getline(in, linea)) {
 		
-        if (linea.empty()) continue;
-
+        if (linea.empty(){
+			cout<<"Hay una linea vacia, no se pudo cargar"<<endl;
+			return;
+		}
         if (linea[0]=='>') {
             // Guardar secuencia previa si esq ya habia
             if (leyendoSecuencia) {
+				secActual.setAncho(anchoDetectado);
                 secActual.setCode(bases_actuales);
                 list_secuencia.push_back(secActual);
             }
-
+			
             // Nueva secuencia
             secActual=Secuencia();
             secActual.setName(linea.substr(1)); // quitar '>' para guardar el nombre
             leyendoSecuencia=true;
 			bases_actuales.clear();
+			anchoDetectado=linea.size();
             
-        }else{
+        }else if(linea[0]!='>' && leyendoSecuencia==false){
+			cout<<"El archivo no tiene el formato requerido");
+			return;
+		}else{
             // Línea de bases
-            
             for (char c : linea) {
                 // guardar letra en la lista de bases
 				if(c != 'A' && c != 'C' && c != 'G' && c != 'T' && c != 'U' &&
@@ -60,7 +67,8 @@ void Sistema::cargar(std::string nombreArchivo) {
 				c != 'W' && c != 'B' && c != 'D' && c != 'H' && c != 'V' &&
 				c != 'N' && c != 'X' && c != '-'){
 					if (c == ' ' || c == '\0' || c == '\r' || c == '\t' ){
-						cout<<"Espacio detectado. "<<endl;
+						//Para que no ingrese el ultimo caracter de la secuencia
+						continue;
 					}else{
 						cout<<"La base: "<<c<<" NO SE RECONOCE!"<<endl;
 						cout<<"No se cargó el archivo. "<<endl;
@@ -68,20 +76,14 @@ void Sistema::cargar(std::string nombreArchivo) {
 					}
 				}else{
 					bases_actuales.push_back(c);
-					cout<<"'"<<c<<"'"<<endl;
 				}
-				
             }
-			bases_actuales.push_back('*');
-			/*
-				Tratamos de diferenciar los saltos de línea poniendo "*" en el arreglo de chars.
-			*/
-        }
-		 
+        } 
     }
 
     // Guardar la última
     if (leyendoSecuencia) {
+		secActual.setAncho(anchoDetectado);
         secActual.setCode(bases_actuales);
         list_secuencia.push_back(secActual);
     }
@@ -89,29 +91,30 @@ void Sistema::cargar(std::string nombreArchivo) {
     in.close();
 
     if (list_secuencia.empty()) {
-        std::cout<<nombreArchivo<<" no contiene ninguna secuencia."<<std::endl;
+        cout<<nombreArchivo<<" no contiene ninguna secuencia."<<endl;
     } else {
-        std::cout<<list_secuencia.size()<<"secuencias cargadas correctamente desde " <<nombreArchivo<< "."<<std::endl;
+        cout<<list_secuencia.size()<<"secuencias cargadas correctamente desde " <<nombreArchivo<< "."<<endl;
     }
+
+	//PRUEBA RECORRIDO
 	
-	// Iterador sobre la lista de Secuencia
-    std::list<Secuencia>::iterator itSeq = this->list_secuencia.begin();
+    list<Secuencia>::iterator itSeq = this->list_secuencia.begin();
     for (; itSeq != this->list_secuencia.end(); ++itSeq) {
 
         // Obtener y mostrar el nombre (getName() devuelve por valor según tu última versión)
-        std::string nombre = itSeq->getName();
-        std::cout << "Secuencia: " << nombre << std::endl;
+        string nombre = itSeq->getName();
+        cout << "Secuencia: " << nombre << endl;
 
         // Obtener la lista de caracteres (se hace copia si getCode() devuelve por valor)
-        std::list<char> codigo = itSeq->getCode();
+        list<char> codigo = itSeq->getCode();
 
         // Iterar y mostrar cada carácter
-        std::list<char>::iterator itChar = codigo.begin();
+        list<char>::iterator itChar = codigo.begin();
         for (; itChar != codigo.end(); ++itChar) {
-            std::cout << *itChar;
+            cout << *itChar;
         }
 
-        std::cout << std::endl << std::endl; // separación entre secuencias
+        cout << endl << endl; // separación entre secuencias
     }
 	  
 }
@@ -122,19 +125,19 @@ void listar(){
 
   cout<<"Hay "<<this->list_secuencia.size()<< "secuencias cargadas en memoria"<<endl;
 
-  list<Secuencia> ::iterator it=*this->list_secuencias.begin(); // MOST IMPORTANT VARIABLE!!
+  list<Secuencia> ::iterator it=this->list_secuencias.begin(); // MOST IMPORTANT VARIABLE!!
 
   //Recorre cada secuencia 
-  for(;it!=*this.list_secuencias.end();it++){
+  for(;it!=this->list_secuencias.end();it++){
 
     bool completa=true;
     bool codigo[17]={false};
     bool hayPricipales=false;
-    list<char> ::iterator it2=it->code.begin();
+    list<char> ::iterator it2=it->getCode().begin();
     int cant=it->code.size();
       
     //Primer Recorrido del codigo de cada secuencia
-    for(; it2!=it->code.end(); it2++){
+    for(; it2!=it->getCode.end(); it2++){
         if(*it2=='A'){
           codigo[0]=true;
         }
@@ -158,11 +161,11 @@ void listar(){
       }
 
       vector<vector<char>> matriz;
-      list<char> ::iterator it3=it->code.begin();
+      list<char> ::iterator it3=it->getCode.begin();
       
     //Segundo recorrido
-      for(; it3!=it->code.end(); it3++){
-
+      for(; it3!=it->getCode.end(); it3++){
+		  
         if(*it3=='R'){
             completa=false;
             if(!codigo[0] && !codigo[2]){
@@ -265,21 +268,33 @@ void listar(){
         }
         if(*it[i]=='N'){
             completa=false;
-            if(!codigo[0] && !codigo[1] && !codigo[3] && !codigo[4] && !codigo[2]){
                 if(!hayPrincipales){
                     matriz.push_back({'A','C','G','T','U'});
-                }else{
-                    codigo[15]=true;
+					codigo[15]=true;
                 }
-            }
         }
-    }
+		if(*it[i]=='X'){
+            completa=false;
+                if(!hayPrincipales){
+                    matriz.push_back({'A','C','G','T','U'});
+					codigo[16]=true;
+                }
+        }
+		  if(*it[i]=='-'){
+            completa=false;
+                if(!hayPrincipales){
+                    matriz.push_back({'A','C','G','T','U'});
+					codigo[17]=true;
+                }
+        }
+		  
+	}
       //Si todos los principales estan falsos se procede a analizar la matriz 
       if(!hayPrincipales){
           
-          int cont[5]={0};
+        int cont[5]={0};
         int contador=0;
-          int suma=0;
+        int suma=0;
 
           for (int i = 0; i < matriz.size(); ++i) {
               for (int j = 0; j < matriz[i].size(); ++j) {
@@ -311,30 +326,27 @@ void listar(){
                   }
               }
           }
-            //no se si es menor o igual a cant
+            //no se si es menor
           for(int z=0;z<5 && suma<cant ;z++){
               if(cont[z]!=0){
                   suma=suma+cont[z];
                   contador++;
               }
           }
-          cout << "Secuencia " << it->name << " contiene al menos " << contador << " bases." << endl;
+          cout << "Secuencia " << it->getName << " contiene al menos " << contador << " bases." << endl;
       }else{
           int diferentes = 0;
           for(int k=0;k<17;++k){ 
               if(codigo[k]) diferentes++;
           }
           if(completa){
-                cout << "Secuencia " << it->name << " contiene " << diferentes << " bases." << endl;
+                cout << "Secuencia " << it->getName << " contiene " << diferentes << " bases." << endl;
           }else{
-              cout << "Secuencia " << it->name << " contiene al menos " << diferentes << " bases." << endl;
+              cout << "Secuencia " << it->getName << " contiene al menos " << diferentes << " bases." << endl;
           }
       }
   }
 }
-
-
-
 
 void histograma(string secuencia){
   
