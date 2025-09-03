@@ -9,6 +9,9 @@
 
 using namespace std;
 
+Sistema() {
+        list_secuencia.clear(); // la deja vacía
+    }
 
 void Sistema::cargar(std::string nombreArchivo) { 
     list_secuencia.clear(); // borrar lo anterior
