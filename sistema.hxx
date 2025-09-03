@@ -9,7 +9,7 @@
 
 using namespace std;
 
-Sistema() {
+Sistema::Sistema() {
         list_secuencia.clear(); // la deja vacía
     }
 
