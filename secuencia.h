@@ -14,6 +14,8 @@ class Secuencia{
   int ancho;
 
   public:
+  Secuencia();
+  Secuencia(const std::string& nombre, const std::list<char>& bases, int w);
   string getName();
   void setName();
   list<char> getCode();
