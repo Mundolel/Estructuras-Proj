@@ -501,7 +501,7 @@ void Sistema::subsecuencia(string subsecuencia_buscada){
         Repetir hasta acabar las secuencias del sistema
         Mostrar resultado final: según el conteo total (0 = no existe, >0 = se repite X veces)
     """
-    
+
     // Verificar si hay secuencias cargadas
     if(this->list_secuencia.empty()){
         cout << "No hay secuencias cargadas en memoria." << endl;
@@ -556,9 +556,77 @@ void Sistema::subsecuencia(string subsecuencia_buscada){
     }
 }
 
-void enmascarar(string subsecuencia){
-  
+void Sistema::enmascarar(const std::string& subsecuencia) {
+    if (this->list_secuencia.empty()) {
+        std::cout << "No hay secuencias cargadas en memoria." << std::endl;
+        return;
+    }
+
+    if (subsecuencia.empty()) {
+        std::cout << "La subsecuencia dada está vacía; no se enmascara nada." << std::endl;
+        return;
+    }
+
+    int totalEnmascaradas = 0;
+    size_t L = subsecuencia.length();
+
+    // Iterar secuencias (sin usar auto)
+    std::list<Secuencia>::iterator itSeq;
+    for (itSeq = this->list_secuencia.begin(); itSeq != this->list_secuencia.end(); ++itSeq) {
+        std::list<char>& codigo = itSeq->getCode();
+
+        if (codigo.size() < L) continue;
+
+        // Recolectar inicios de coincidencias en esta secuencia
+        std::vector<std::list<char>::iterator> inicios;
+        std::list<char>::iterator it;
+        for (it = codigo.begin(); it != codigo.end(); ++it) {
+            std::list<char>::iterator temp = it;
+            size_t i = 0;
+            bool coincide = true;
+
+            // comparar carácter por carácter con la subsecuencia (sin crear strings)
+            while (i < L) {
+                if (temp == codigo.end()) { 
+                    coincide = false;
+                    break;
+                }
+                if (*temp != subsecuencia[i]) {
+                    coincide = false;
+                    break;
+                }
+                ++temp;
+                ++i;
+            }
+            if (coincide && i == L) {
+                inicios.push_back(it);
+            }
+        }
+
+        // Enmascarar todas las apariciones encontradas
+        std::vector<std::list<char>::iterator>::iterator vit;
+        for (vit = inicios.begin(); vit != inicios.end(); ++vit) {
+            std::list<char>::iterator startIt = *vit;
+            std::list<char>::iterator temp = startIt;
+            for (size_t k = 0; k < L; ++k) {
+                *temp = 'X';
+                ++temp;
+            }
+            ++totalEnmascaradas;
+        }
+    }
+
+    // Mensajes según el resultado
+    if (totalEnmascaradas == 0) {
+        std::cout << "La subsecuencia dada no existe dentro de las secuencias cargadas en memoria, por tanto no se enmascara nada." << std::endl;
+    } else if (totalEnmascaradas == 1) {
+        std::cout << "1 subsecuencia ha sido enmascarada dentro de las secuencias cargadas en memoria." << std::endl;
+    } else {
+        std::cout << totalEnmascaradas << " subsecuencias han sido enmascaradas dentro de las secuencias cargadas en memoria." << std::endl;
+    }
 }
+
+
 void guardar(string nombreArchivo){
   
 }
