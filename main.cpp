@@ -41,18 +41,27 @@ int main(){
         }
         else if(comando=="listar_secuencias" && parametro.empty()){
             cout<<"Exito. El comando esta bien"<<endl;
+			if(sistema->list_secuencia.empty(){
+				cout<<"Aun no hay secuencias cargadas"<<endl;
+			}else{
+				sistema.listar();
+			}
         }
         else if(comando=="histograma" && !parametro.empty() && extra.empty()){
             cout<<"Exito. El comando esta bien"<<endl;
+			sistema.histograma(parametro);
         }
         else if(comando=="es_subsecuencia" && !parametro.empty() && extra.empty()){
              cout<<"Exito. El comando esta bien"<<endl;
+			sistema.subsecuencia(parametro);
         }
         else if(comando=="enmascarar" && !parametro.empty() && extra.empty()){
             cout<<"Exito. El comando esta bien"<<endl;
+			sistema.enmascarar(parametro);
         }
         else if(comando=="guardar" && !parametro.empty() && extra.empty()){
             cout<<"Exito. El comando esta bien"<<endl;
+			sistema.guardar(parametro);
         }
         else if(comando=="codificar" && !parametro.empty() && extra.empty()){
             cout<<"Exito. El comando esta bien"<<endl;
