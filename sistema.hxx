@@ -1,18 +1,20 @@
 #ifndef SISTEMA_HXX
 #define SISTEMA_HXX
-//hola
-#include "Sistema.h"
+
+#include "sistema.h"
 #include <iostream>
+#include <fstream>
 #include <list>
 #include <vector>
 
 using namespace std;
 
 
-void Sistema::cargar(std::string nombreArchivo) { // ALEJO
+void Sistema::cargar(std::string nombreArchivo) { 
     list_secuencia.clear(); // borrar lo anterior
 
-    std::ifstream in(nombreArchivo);
+    ifstream in;
+	in.open(nombreArchivo);
     if (!in.is_open()) {
         std::cout<<nombreArchivo<<" no se encuentra o no se puede leer "<<std::endl;
         return;
@@ -21,40 +23,59 @@ void Sistema::cargar(std::string nombreArchivo) { // ALEJO
     std::string linea;
     Secuencia secActual;
     bool leyendoSecuencia=false;
+	list<char> bases_actuales;
     
 
-    while (std::getline(in, linea)) {
+    while (getline(in, linea)) {
+		
         if (linea.empty()) continue;
 
         if (linea[0]=='>') {
             // Guardar secuencia previa si esq ya habia
             if (leyendoSecuencia) {
-                
+                secActual.setCode(bases_actuales);
                 list_secuencia.push_back(secActual);
             }
 
             // Nueva secuencia
             secActual=Secuencia();
-            secActual.setName(linea.substr(1)); // quitar '>'
+            secActual.setName(linea.substr(1)); // quitar '>' para guardar el nombre
             leyendoSecuencia=true;
+			bases_actuales.clear();
             
-        } else {
+        }else{
             // Línea de bases
             
             for (char c : linea) {
                 // guardar letra en la lista de bases
-                secActual.getCode().push_back(c);
-				secActual.getCode().push_back('*'); 
-				/*
-					Tratamos de diferenciar los saltos de línea poniendo "*" en el arreglo de chars.
-				*/
+				if(c != 'A' && c != 'C' && c != 'G' && c != 'T' && c != 'U' &&
+				c != 'R' && c != 'Y' && c != 'K' && c != 'M' && c != 'S' &&
+				c != 'W' && c != 'B' && c != 'D' && c != 'H' && c != 'V' &&
+				c != 'N' && c != 'X' && c != '-'){
+					if (c == ' ' || c == '\0' || c == '\r' || c == '\t' ){
+						cout<<"Espacio detectado. "<<endl;
+					}else{
+						cout<<"La base: "<<c<<" NO SE RECONOCE!"<<endl;
+						cout<<"No se cargó el archivo. "<<endl;
+						return;
+					}
+				}else{
+					bases_actuales.push_back(c);
+					cout<<"'"<<c<<"'"<<endl;
+				}
+				
             }
+			bases_actuales.push_back('*');
+			/*
+				Tratamos de diferenciar los saltos de línea poniendo "*" en el arreglo de chars.
+			*/
         }
+		 
     }
 
     // Guardar la última
     if (leyendoSecuencia) {
-        
+        secActual.setCode(bases_actuales);
         list_secuencia.push_back(secActual);
     }
 
@@ -62,14 +83,34 @@ void Sistema::cargar(std::string nombreArchivo) { // ALEJO
 
     if (list_secuencia.empty()) {
         std::cout<<nombreArchivo<<" no contiene ninguna secuencia."<<std::endl;
-    } else if (list_secuencia.size() == 1) {
-        std::cout<<"1 secuencia cargada correctamente desde "<<nombreArchivo<<"."<<std::endl;
-		// este else es innecesario, por que se implementó?
     } else {
         std::cout<<list_secuencia.size()<<"secuencias cargadas correctamente desde " <<nombreArchivo<< "."<<std::endl;
     }
+	
+	// Iterador sobre la lista de Secuencia
+    std::list<Secuencia>::iterator itSeq = this->list_secuencia.begin();
+    for (; itSeq != this->list_secuencia.end(); ++itSeq) {
+
+        // Obtener y mostrar el nombre (getName() devuelve por valor según tu última versión)
+        std::string nombre = itSeq->getName();
+        std::cout << "Secuencia: " << nombre << std::endl;
+
+        // Obtener la lista de caracteres (se hace copia si getCode() devuelve por valor)
+        std::list<char> codigo = itSeq->getCode();
+
+        // Iterar y mostrar cada carácter
+        std::list<char>::iterator itChar = codigo.begin();
+        for (; itChar != codigo.end(); ++itChar) {
+            std::cout << *itChar;
+        }
+
+        std::cout << std::endl << std::endl; // separación entre secuencias
+    }
+	  
 }
 
+
+/*
 void listar(){
 
   cout<<"Hay "<<this->list_secuencia.size()<< "secuencias cargadas en memoria"<<endl;
@@ -292,7 +333,7 @@ void histograma(string secuencia){
   
 }
 void Sistema::subsecuencia(string subsecuencia_buscada){
-     /*
+     
     Pasos:
         Verificar si hay secuencias cargadas (si no, mostrar mensaje y terminar)
         Iterar la lista de secuencias del sistema
@@ -300,7 +341,7 @@ void Sistema::subsecuencia(string subsecuencia_buscada){
         Contar el número total de apariciones (no imprimir por secuencia)
         Repetir hasta acabar las secuencias del sistema
         Mostrar resultado final: según el conteo total (0 = no existe, >0 = se repite X veces)
-    */
+    
 
     // Verificar si hay secuencias cargadas
     if(this->list_secuencia.empty()){
@@ -426,7 +467,7 @@ void Sistema::enmascarar(const std::string& subsecuencia) {
     }
 }
 
-
+*/
 void guardar(string nombreArchivo){
   
 }

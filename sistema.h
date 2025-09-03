@@ -2,7 +2,7 @@
 #define SISTEMA_H
 
 #include <string>
-#include "Secuencia.h"
+#include "secuencia.h"
 #include <list>
 
 using namespace std;
@@ -23,5 +23,5 @@ class Sistema{
 
 };
 
-#include "Sistema.hxx"
+#include "sistema.hxx"
 #endif 

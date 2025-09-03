@@ -1,7 +1,7 @@
 #include <iostream> // Librería para entrada y salida estándar
 #include <string> // Librería para usar la clase string
 #include <sstream> // Librería para trabajar con flujos de texto
-#include "Sistema.h"
+#include "sistema.h"
 
 using namespace std;
 
@@ -37,6 +37,7 @@ int main(){
         //Validacion de comandos con su respectiva cantidad de parametros
         if(comando=="cargar" && !parametro.empty() && extra.empty()){
             cout<<"Exito. El comando esta bien"<<endl;
+			sistema.cargar(parametro);
         }
         else if(comando=="listar_secuencias" && parametro.empty()){
             cout<<"Exito. El comando esta bien"<<endl;

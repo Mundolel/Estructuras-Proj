@@ -1,7 +1,7 @@
 #ifndef SECUENCIA_HXX
 #define SECUENCIA_HXX
 
-#include "Secuencia.h"
+#include "secuencia.h"
 
 // Constructores
 Secuencia::Secuencia()

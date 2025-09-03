@@ -28,5 +28,5 @@ public:
     
 };
 
-#include "Secuencia.hxx"
+#include "secuencia.hxx"
 #endif
