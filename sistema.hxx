@@ -17,17 +17,17 @@ bool Sistema::estaVacio() {
         return list_secuencia.empty();
     }
 
-void Sistema::cargar(std::string nombreArchivo) {
+void Sistema::cargar(string nombreArchivo) {
     list_secuencia.clear(); // borrar lo anterior
 
     ifstream in;
 	in.open(nombreArchivo);
     if (!in.is_open()) {
-        std::cout<<nombreArchivo<<" no se encuentra o no se puede leer "<<std::endl;
+        cout<<nombreArchivo<<" no se encuentra o no se puede leer "<<endl;
         return;
     }
 
-    std::string linea;
+    string linea;
     Secuencia secActual;
     bool leyendoSecuencia=false;
 	list<char> bases_actuales;
@@ -124,20 +124,20 @@ void Sistema::cargar(std::string nombreArchivo) {
 
 void Sistema::listar(){
 
-    std::cout << "Hay " << this->list_secuencia.size() << " secuencias cargadas en memoria" << std::endl;
+    cout << "Hay " << this->list_secuencia.size() << " secuencias cargadas en memoria" << endl;
 
-    std::list<Secuencia>::iterator it = this->list_secuencia.begin(); // iterador sobre secuencias
+    list<Secuencia>::iterator it = this->list_secuencia.begin(); // iterador sobre secuencias
 
     // Recorre cada secuencia
     for (; it != this->list_secuencia.end(); ++it) {
-
+		cout << "[DEBUG] Recuperado de la lista: " << it->getName() << endl;
         bool completa = true;
         bool codigo[18] = { false }; // índices 0..17 (0..4 primarias, 5..16 ambig, 17 = '-')
         bool hayPrincipales = false;
 
         // COPIA local del code para evitar temporales si getCode() devuelve por valor
-        std::list<char> codigoList = it->getCode();
-        std::list<char>::iterator it2 = codigoList.begin();
+        list<char> codigoList = it->getCode();
+        list<char>::iterator it2 = codigoList.begin();
         int cant = static_cast<int>(codigoList.size());
 
         // Primer recorrido: detectar si hay bases primarias A,C,G,T,U
@@ -156,8 +156,8 @@ void Sistema::listar(){
         }
 
         // Matriz de posibilidades para cuando NO hay primarias
-        std::vector<std::vector<char>> matriz;
-        std::list<char>::iterator it3 = codigoList.begin();
+        vector<vector<char>> matriz;
+        list<char>::iterator it3 = codigoList.begin();
 
         // Segundo recorrido: analizar códigos IUPAC y llenar matriz o marcar codigo[]
         for (; it3 != codigoList.end(); ++it3) {
@@ -167,7 +167,7 @@ void Sistema::listar(){
                 completa = false;
                 if (!codigo[0] && !codigo[2]) {
                     if (!hayPrincipales) {
-                        matriz.push_back(std::vector<char>{'A','G'});
+                        matriz.push_back(vector<char>{'A','G'});
                     } else {
                         codigo[5] = true;
                     }
@@ -176,7 +176,7 @@ void Sistema::listar(){
                 completa = false;
                 if (!codigo[1] && !codigo[3] && !codigo[4]) {
                     if (!hayPrincipales) {
-                        matriz.push_back(std::vector<char>{'C','T','U'});
+                        matriz.push_back(vector<char>{'C','T','U'});
                     } else {
                         codigo[6] = true;
                     }
@@ -185,7 +185,7 @@ void Sistema::listar(){
                 completa = false;
                 if (!codigo[3] && !codigo[4] && !codigo[2]) {
                     if (!hayPrincipales) {
-                        matriz.push_back(std::vector<char>{'T','G','U'});
+                        matriz.push_back(vector<char>{'T','G','U'});
                     } else {
                         codigo[7] = true;
                     }
@@ -194,7 +194,7 @@ void Sistema::listar(){
                 completa = false;
                 if (!codigo[0] && !codigo[1]) {
                     if (!hayPrincipales) {
-                        matriz.push_back(std::vector<char>{'A','C'});
+                        matriz.push_back(vector<char>{'A','C'});
                     } else {
                         codigo[8] = true;
                     }
@@ -203,7 +203,7 @@ void Sistema::listar(){
                 completa = false;
                 if (!codigo[1] && !codigo[2]) {
                     if (!hayPrincipales) {
-                        matriz.push_back(std::vector<char>{'G','C'});
+                        matriz.push_back(vector<char>{'G','C'});
                     } else {
                         codigo[9] = true;
                     }
@@ -212,7 +212,7 @@ void Sistema::listar(){
                 completa = false;
                 if (!codigo[0] && !codigo[3] && !codigo[4]) {
                     if (!hayPrincipales) {
-                        matriz.push_back(std::vector<char>{'A','T','U'});
+                        matriz.push_back(vector<char>{'A','T','U'});
                     } else {
                         codigo[10] = true;
                     }
@@ -221,7 +221,7 @@ void Sistema::listar(){
                 completa = false;
                 if (!codigo[1] && !codigo[2] && !codigo[3] && !codigo[4]) {
                     if (!hayPrincipales) {
-                        matriz.push_back(std::vector<char>{'C','G','T','U'});
+                        matriz.push_back(vector<char>{'C','G','T','U'});
                     } else {
                         codigo[11] = true;
                     }
@@ -230,7 +230,7 @@ void Sistema::listar(){
                 completa = false;
                 if (!codigo[0] && !codigo[2] && !codigo[3] && !codigo[4]) {
                     if (!hayPrincipales) {
-                        matriz.push_back(std::vector<char>{'A','G','T','U'});
+                        matriz.push_back(vector<char>{'A','G','T','U'});
                     } else {
                         codigo[12] = true;
                     }
@@ -239,7 +239,7 @@ void Sistema::listar(){
                 completa = false;
                 if (!codigo[0] && !codigo[1] && !codigo[3] && !codigo[4]) {
                     if (!hayPrincipales) {
-                        matriz.push_back(std::vector<char>{'A','C','T','U'});
+                        matriz.push_back(vector<char>{'A','C','T','U'});
                     } else {
                         codigo[13] = true;
                     }
@@ -248,7 +248,7 @@ void Sistema::listar(){
                 completa = false;
                 if (!codigo[0] && !codigo[1] && !codigo[2]) {
                     if (!hayPrincipales) {
-                        matriz.push_back(std::vector<char>{'A','C','G'});
+                        matriz.push_back(vector<char>{'A','C','G'});
                     } else {
                         codigo[14] = true;
                     }
@@ -256,7 +256,7 @@ void Sistema::listar(){
             } else if (ch == 'N') {
                 completa = false;
                 if (!hayPrincipales) {
-                    matriz.push_back(std::vector<char>{'A','C','G','T','U'});
+                    matriz.push_back(vector<char>{'A','C','G','T','U'});
                     codigo[15] = true;
                 } else {
                     codigo[15] = true;
@@ -264,7 +264,7 @@ void Sistema::listar(){
             } else if (ch == 'X') {
                 completa = false;
                 if (!hayPrincipales) {
-                    matriz.push_back(std::vector<char>{'A','C','G','T','U'});
+                    matriz.push_back(vector<char>{'A','C','G','T','U'});
                     codigo[16] = true;
                 } else {
                     codigo[16] = true;
@@ -272,7 +272,7 @@ void Sistema::listar(){
             } else if (ch == '-') {
                 completa = false;
                 if (!hayPrincipales) {
-                    matriz.push_back(std::vector<char>{'A','C','G','T','U'});
+                    matriz.push_back(vector<char>{'A','C','G','T','U'});
                     codigo[17] = true;
                 } else {
                     codigo[17] = true;
@@ -317,7 +317,9 @@ void Sistema::listar(){
                 }
             }
 
-            std::cout << "Secuencia " << it->getName() << " contiene al menos " << contador << " bases." << std::endl;
+            cout << "Secuencia " << it->getName();
+			cout << " contiene al menos " << contador << " bases." << endl;
+			cout << "[DEBUG] Recuperado de la lista: " << it->getName() << endl;
 
         } else {
             int diferentes = 0;
@@ -327,14 +329,19 @@ void Sistema::listar(){
 			}
 
 			if (completa) {
-				std::cout << "Secuencia " << it->getName() << " contiene " << diferentes << " bases." << std::endl;
+				cout << "Secuencia " << it->getName(); 
+				cout<< " contiene " << diferentes << " bases." << endl;
+				cout << "[DEBUG] Recuperado de la lista: " << it->getName() << endl;
 			} else {
-				std::cout << "Secuencia " << it->getName() << " contiene al menos " << diferentes << " bases." << std::endl;
+				cout << "Secuencia " << it->getName()<<endl; 
+				cout<< " contiene al menos " << diferentes << " bases." << endl;
+				cout << "[DEBUG] Recuperado de la lista: " << it->getName() << endl;
 			}
 
         }
 
     } // fin for secuencias
+	
 }
 
 void Sistema::histograma(string secuencia){
@@ -351,54 +358,53 @@ void Sistema::subsecuencia(string subsecuencia_buscada){ // compaginar con defin
         Mostrar resultado final: según el conteo total (0 = no existe, >0 = se repite X veces)
     */
 
-    // Verificar si hay secuencias cargadas
-    if(this->list_secuencia.empty()){
-        cout << "No hay secuencias cargadas en memoria." << endl;
-        return;
-    }
-    
     cout << "Hay " << this->list_secuencia.size() << " secuencias cargadas en memoria" << endl;
-    
+
     int conteo_total = 0;
-    int longitud_busqueda = subsecuencia_buscada.length();
-    
+    int longitud_busqueda = static_cast<int>(subsecuencia_buscada.length());
+
     // Iterar sobre todas las secuencias cargadas
     list<Secuencia>::iterator it = this->list_secuencia.begin();
-    for(; it != this->list_secuencia.end(); ++it){
-        
-        // Buscar directamente en la lista de chars sin convertir a string
-        list<char>::iterator code_it = it->getCode().begin();
-        
+    for (; it != this->list_secuencia.end(); ++it) {
+
+        // COPIA local de la lista<char> para poder usar iteradores seguros
+        list<char> codigo = it->getCode();
+
+        // Iterador sobre la copia
+        list<char>::iterator code_it = codigo.begin();
+        list<char>::iterator codigo_end = codigo.end();
+
         // Mientras tengamos suficientes caracteres para una posible coincidencia
-        while(code_it != it->getCode().end()){
-            
+        for (; code_it != codigo_end; ++code_it) {
+
             // Verificar si desde esta posición coincide la subsecuencia
             list<char>::iterator temp_it = code_it;
             int i = 0;
             bool coincide = true;
-            
-            // Comparar caracter por caracter
-            while(i < longitud_busqueda && temp_it != it->getCode().end()){
-                if(*temp_it != subsecuencia_buscada[i]){
+
+            // Comparar carácter por carácter
+            while (i < longitud_busqueda && temp_it != codigo_end) {
+                if (*temp_it != subsecuencia_buscada[i]) {
                     coincide = false;
                     break;
                 }
                 ++temp_it;
                 ++i;
             }
-            
+
             // Si llegamos al final de la subsecuencia buscada, encontramos una coincidencia
-            if(coincide && i == longitud_busqueda){
-                conteo_total++;
+            if (coincide && i == longitud_busqueda) {
+                ++conteo_total;
             }
-            
-            // Avanzar al siguiente caracter para buscar solapamientos
-            ++code_it;
+
+            // Nota: avanzamos el for con ++code_it (ya hecho por el for)
+            // Esto permite encontrar coincidencias solapadas (si quieres evitar solapamientos,
+            // aquí deberías avanzar code_it L-1 pasos más).
         }
     }
-    
+
     // Mostrar resultado según el conteo
-    if(conteo_total == 0){
+    if (conteo_total == 0) {
         cout << "La subsecuencia dada no existe dentro de las secuencias cargadas en memoria." << endl;
     } else {
         cout << "La subsecuencia dada se repite " << conteo_total << " veces dentro de las secuencias cargadas en memoria." << endl;
@@ -406,34 +412,34 @@ void Sistema::subsecuencia(string subsecuencia_buscada){ // compaginar con defin
 }
 
 // firma debe coincidir con la declarada en Sistema.h
-void Sistema::enmascarar(std::string subsecuencia) {
+void Sistema::enmascarar(string subsecuencia) {
     if (this->list_secuencia.empty()) {
-        std::cout << "No hay secuencias cargadas en memoria." << std::endl;
+        cout << "No hay secuencias cargadas en memoria." << endl;
         return;
     }
     if (subsecuencia.empty()) {
-        std::cout << "La subsecuencia dada está vacía; no se enmascara nada." << std::endl;
+        cout << "La subsecuencia dada está vacía; no se enmascara nada." << endl;
         return;
     }
 
     int totalEnmascaradas = 0;
-    std::size_t L = subsecuencia.length();
+    size_t L = subsecuencia.length();
 
-    std::list<Secuencia>::iterator itSeq;
+    list<Secuencia>::iterator itSeq;
     for (itSeq = this->list_secuencia.begin(); itSeq != this->list_secuencia.end(); ++itSeq) {
         // trabajar sobre una copia (porque getCode() devuelve por valor)
-        std::list<char> codigo = itSeq->getCode();
+        list<char> codigo = itSeq->getCode();
         if (codigo.size() < L) {
             // si la copia es menor que la subsecuencia, nada que hacer
             continue;
         }
 
         // iterador principal sobre la copia
-        std::list<char>::iterator it = codigo.begin();
+        list<char>::iterator it = codigo.begin();
         while (it != codigo.end()) {
             // intentar comparar subsecuencia desde 'it'
-            std::list<char>::iterator temp = it;
-            std::size_t i = 0;
+            list<char>::iterator temp = it;
+            size_t i = 0;
             bool coincide = true;
             while (i < L) {
                 if (temp == codigo.end()) { coincide = false; break; }
@@ -444,14 +450,14 @@ void Sistema::enmascarar(std::string subsecuencia) {
             if (coincide && i == L) {
                 // enmascarar L caracteres desde it
                 temp = it;
-                for (std::size_t k = 0; k < L; ++k) {
+                for (size_t k = 0; k < L; ++k) {
                     *temp = 'X';
                     ++temp;
                 }
                 ++totalEnmascaradas;
 
                 // avanzar el iterador principal L pasos (evitar solapamientos)
-                for (std::size_t k = 0; k < L && it != codigo.end(); ++k) ++it;
+                for (size_t k = 0; k < L && it != codigo.end(); ++k) ++it;
             } else {
                 // no coincide -> avanzar 1
                 ++it;
@@ -464,11 +470,11 @@ void Sistema::enmascarar(std::string subsecuencia) {
 
     // mensajes finales (igual que antes)
     if (totalEnmascaradas == 0) {
-        std::cout << "La subsecuencia dada no existe dentro de las secuencias cargadas en memoria, por tanto no se enmascara nada." << std::endl;
+        cout << "La subsecuencia dada no existe dentro de las secuencias cargadas en memoria, por tanto no se enmascara nada." << endl;
     } else if (totalEnmascaradas == 1) {
-        std::cout << "1 subsecuencia ha sido enmascarada dentro de las secuencias cargadas en memoria." << std::endl;
+        cout << "1 subsecuencia ha sido enmascarada dentro de las secuencias cargadas en memoria." << endl;
     } else {
-        std::cout << totalEnmascaradas << " subsecuencias han sido enmascaradas dentro de las secuencias cargadas en memoria." << std::endl;
+        cout << totalEnmascaradas << " subsecuencias han sido enmascaradas dentro de las secuencias cargadas en memoria." << endl;
     }
 }
 

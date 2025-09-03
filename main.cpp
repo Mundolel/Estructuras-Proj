@@ -60,6 +60,7 @@ int main(){
 			if(sistema.estaVacio()){
 				cout<<"Aun no hay secuencias cargadas"<<endl;
 			}else{
+				cout<<"Se ejecuta comando con parámetro: "<<parametro<<endl;
 				sistema.subsecuencia(parametro);
 			}
         }
