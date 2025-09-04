@@ -80,7 +80,7 @@ void Sistema::cargar(string nombreArchivo) {
 				c != 'R' && c != 'Y' && c != 'K' && c != 'M' && c != 'S' &&
 				c != 'W' && c != 'B' && c != 'D' && c != 'H' && c != 'V' &&
 				c != 'N' && c != 'X' && c != '-'){
-					if (c == '\0' || c == '\r' || c == '\t' ){ // quitamos espacio catalina explica
+					if (c == ' ' || c == '\0' || c == '\r' || c == '\t' ){ // quitamos espacio catalina explica
 						//Para que no ingrese el ultimo caracter de la secuencia
 						continue;
 					}else{
