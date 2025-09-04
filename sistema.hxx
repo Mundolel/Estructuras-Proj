@@ -59,7 +59,7 @@ void Sistema::cargar(string nombreArchivo) {
 			}
 			secActual.setName(rawName);
 			
-			cout<<"Se va a leer: "<<secActual.getName()<<endl; // DEBUG
+			//cout<<"Se va a leer: "<<secActual.getName()<<endl; // DEBUG
             leyendoSecuencia=true;
 			bases_actuales.clear();
 			anchoDetectado = 0;                 // reinicio ancho
@@ -143,7 +143,7 @@ void Sistema::listar(){
 
     // Recorre cada secuencia
     for (; it != this->list_secuencia.end(); ++it) {
-		cout << "[DEBUG] Recuperado de la lista: " << it->getName() << endl;
+		//cout << "[DEBUG] Recuperado de la lista: " << it->getName() << endl;
         bool completa = true;
         bool codigo[18] = { false }; // índices 0..17 (0..4 primarias, 5..16 ambig, 17 = '-')
         bool hayPrincipales = false;
