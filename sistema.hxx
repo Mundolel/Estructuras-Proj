@@ -32,7 +32,7 @@ void Sistema::cargar(string nombreArchivo) {
     bool leyendoSecuencia=false;
 	list<char> bases_actuales;
 	int anchoDetectado=0;
-
+	bool esperarPrimeraLineaBases = false;
     
     while (getline(in, linea)) {
 		
@@ -50,16 +50,29 @@ void Sistema::cargar(string nombreArchivo) {
 			
             // Nueva secuencia
             secActual=Secuencia();
-            secActual.setName(linea.substr(1)); // quitar '>' para guardar el nombre
+            //secActual.setName(linea.substr(1));  quitar '>' para guardar el nombre
+			string rawName = linea.substr(1); // quita el > 
+
+			// Si el último caracter es raro, quítalo
+			while (rawName.back() == '\r' || rawName.back() == '\t' || rawName.back() == ' ') {
+				rawName.pop_back();
+			}
+			secActual.setName(rawName);
+			
 			cout<<"Se va a leer: "<<secActual.getName()<<endl; // DEBUG
             leyendoSecuencia=true;
 			bases_actuales.clear();
-			anchoDetectado=linea.size();
+			anchoDetectado = 0;                 // reinicio ancho
+			esperarPrimeraLineaBases = true;    // la próxima línea de bases dará el ancho
             
         }else if(linea[0]!='>' && leyendoSecuencia==false){
 			cout<<"El archivo no tiene el formato requerido";
 			return;
 		}else{
+				if (esperarPrimeraLineaBases) {
+				anchoDetectado = (linea.size())-1;  // ancho = primera línea de bases
+				esperarPrimeraLineaBases = false;
+			}
             // Línea de bases
             for (char c : linea) {
                 // guardar letra en la lista de bases
@@ -67,7 +80,7 @@ void Sistema::cargar(string nombreArchivo) {
 				c != 'R' && c != 'Y' && c != 'K' && c != 'M' && c != 'S' &&
 				c != 'W' && c != 'B' && c != 'D' && c != 'H' && c != 'V' &&
 				c != 'N' && c != 'X' && c != '-'){
-					if (c == ' ' || c == '\0' || c == '\r' || c == '\t' ){
+					if (c == '\0' || c == '\r' || c == '\t' ){ // quitamos espacio catalina explica
 						//Para que no ingrese el ultimo caracter de la secuencia
 						continue;
 					}else{
@@ -317,9 +330,9 @@ void Sistema::listar(){
                 }
             }
 
-            cout << "Secuencia " << it->getName();
-			cout << " contiene al menos " << contador << " bases." << endl;
-			cout << "[DEBUG] Recuperado de la lista: " << it->getName() << endl;
+            cout << "Secuencia " << it->getName()<< " contiene al menos " << contador << " bases." << endl;
+			
+			//cout << "[DEBUG] Recuperado de la lista: " << it->getName() << endl;
 
         } else {
             int diferentes = 0;
@@ -329,13 +342,12 @@ void Sistema::listar(){
 			}
 
 			if (completa) {
-				cout << "Secuencia " << it->getName(); 
-				cout<< " contiene " << diferentes << " bases." << endl;
-				cout << "[DEBUG] Recuperado de la lista: " << it->getName() << endl;
+				cout << "Secuencia " << it->getName() << " contiene " << diferentes << " bases." << endl;
+				//cout << "[DEBUG] Recuperado de la lista: " << it->getName() << endl;
 			} else {
-				cout << "Secuencia " << it->getName()<<endl; 
-				cout<< " contiene al menos " << diferentes << " bases." << endl;
-				cout << "[DEBUG] Recuperado de la lista: " << it->getName() << endl;
+				cout << "Secuencia " << it->getName() << " contiene al menos " << diferentes << " bases." << endl;
+				
+				//cout << "[DEBUG] Recuperado de la lista: " << it->getName() << endl;
 			}
 
         }
@@ -344,8 +356,75 @@ void Sistema::listar(){
 	
 }
 
+
 void Sistema::histograma(string secuencia){
-  
+    //busca la secuencia por el nombre
+    const Secuencia* encontrada=0;
+	list<Secuencia>::iterator itSeq = this->list_secuencia.begin();
+    for(; itSeq != this->list_secuencia.end(); itSeq++){
+        if(itSeq->getName()==secuencia){
+            encontrada=&(*itSeq);
+            break;
+        }
+    }
+
+    // si no existe
+    if(encontrada==0){
+        cout<<"Secuencia invalida."<<endl;
+        return;
+    }
+
+    //contadores para cada codigo en el orden de la tabla del enunciado
+    unsigned long long cA=0,cC=0,cG=0,cT=0,cU=0;
+    unsigned long long cR=0,cY=0,cK=0,cM=0,cS=0,cW=0;
+    unsigned long long cB=0,cD=0,cH=0,cV=0,cN=0,cX=0,cGuion=0; //cGuion es el contador para '-'
+
+    // recorrer bases y acumular frecuencias
+    const list<char>& bases=encontrada->getCode();
+    for(list<char>::const_iterator it=bases.begin(); it!=bases.end(); ++it){
+        char ch=*it;
+        switch(ch){
+            case 'A': cA++; break;
+            case 'C': cC++; break;
+            case 'G': cG++; break;
+            case 'T': cT++; break;
+            case 'U': cU++; break;
+            case 'R': cR++; break;
+            case 'Y': cY++; break;
+            case 'K': cK++; break;
+            case 'M': cM++; break;
+            case 'S': cS++; break;
+            case 'W': cW++; break;
+            case 'B': cB++; break;
+            case 'D': cD++; break;
+            case 'H': cH++; break;
+            case 'V': cV++; break;
+            case 'N': cN++; break;
+            case 'X': cX++; break;
+            case '-': cGuion++; break;
+            default: break; //ignora cualquier caracter no listado
+        }
+    }
+
+    //imprimir segun el orden de la tabla e incluye '-'
+    cout<<"A : "<<cA<<endl;
+    cout<<"C : "<<cC<<endl;
+    cout<<"G : "<<cG<<endl;
+    cout<<"T : "<<cT<<endl;
+    cout<<"U : "<<cU<<endl;
+    cout<<"R : "<<cR<<endl;
+    cout<<"Y : "<<cY<<endl;
+    cout<<"K : "<<cK<<endl;
+    cout<<"M : "<<cM<<endl;
+    cout<<"S : "<<cS<<endl;
+    cout<<"W : "<<cW<<endl;
+    cout<<"B : "<<cB<<endl;
+    cout<<"D : "<<cD<<endl;
+    cout<<"H : "<<cH<<endl;
+    cout<<"V : "<<cV<<endl;
+    cout<<"N : "<<cN<<endl;
+    cout<<"X : "<<cX<<endl;
+    cout<<"- : "<<cGuion<<endl;
 }
 void Sistema::subsecuencia(string subsecuencia_buscada){ // compaginar con definición en el header
      /*
@@ -480,7 +559,40 @@ void Sistema::enmascarar(string subsecuencia) {
 
 
 void Sistema::guardar(string nombreArchivo){
-  
+
+    //abre el archivo para escritura
+    ofstream out(nombreArchivo);
+    if(!out.is_open()){
+        cout<<"Error guardando en "<<nombreArchivo<<"."<<endl;
+        return;
+    }
+    for(Secuencia s: this->list_secuencia){
+
+        // encabezado con el nombre de la secuencia
+        out<<'>'<<s.getName()<<'\n';
+
+        //bases de la secuencia, respetando el ancho original
+        int ancho=s.getAncho();
+        int col=0;
+        for(char c:s.getCode()){
+            out<<c;
+            col++;
+            if(col==ancho){
+                out<<'\n';
+                col=0;
+            }
+        }
+        if(col!=0) out<<'\n'; //cerrar ultima linea si no quedo exacta
+    }
+
+    out.close();
+
+    //mensaje de exito o error al cerrarse
+    if(!out){
+        cout<<"Error guardando en "<<nombreArchivo<<"."<<endl;
+    }else{
+        cout<<"Las secuencias han sido guardadas en "<<nombreArchivo<<"."<<endl;
+    }
 }
 
 
