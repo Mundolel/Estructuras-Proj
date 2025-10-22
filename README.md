@@ -64,5 +64,5 @@ El indicador de línea es el caracter `$`.
 ## 🚀 Ejecución
 
 ```bash
-g++ -std=c++17 -o proyecto *.cpp
-./proyecto
+g++ -std=c++17 -o programa *.cxx *.cpp
+./programa
