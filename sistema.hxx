@@ -12,7 +12,7 @@ using namespace std;
 Sistema::Sistema() {
         list_secuencia.clear(); // la deja vacía
     }
-
+//revisa si esta vacio el sistema
 bool Sistema::estaVacio() {
         return list_secuencia.empty();
     }
@@ -21,7 +21,8 @@ void Sistema::cargar(string nombreArchivo) {
     list_secuencia.clear(); // borrar lo anterior
 
     ifstream in;
-	in.open(nombreArchivo);
+    in.open(nombreArchivo);
+    
     if (!in.is_open()) {
         cout<<nombreArchivo<<" no se encuentra o no se puede leer "<<endl;
         return;
@@ -30,74 +31,73 @@ void Sistema::cargar(string nombreArchivo) {
     string linea;
     Secuencia secActual;
     bool leyendoSecuencia=false;
-	list<char> bases_actuales;
-	int anchoDetectado=0;
-	bool esperarPrimeraLineaBases = false;
-    
+    list<char> bases_actuales;
+    int anchoDetectado=0;
+    bool esperarPrimeraLineaBases = false;
+
     while (getline(in, linea)) {
-		
+
         if (linea.empty()){
-			cout<<"Hay una linea vacia, no se pudo cargar"<<endl;
-			return;
-		}
+            cout<<"Hay una linea vacia, no se pudo cargar"<<endl;
+            return;
+        }
         if (linea[0]=='>') {
             // Guardar secuencia previa si esq ya habia
             if (leyendoSecuencia) {
-				secActual.setAncho(anchoDetectado);
+                secActual.setAncho(anchoDetectado);
                 secActual.setCode(bases_actuales);
                 list_secuencia.push_back(secActual);
             }
-			
+
             // Nueva secuencia
             secActual=Secuencia();
-            //secActual.setName(linea.substr(1));  quitar '>' para guardar el nombre
-			string rawName = linea.substr(1); // quita el > 
+            string rawName = linea.substr(1); // quita el > 
 
-			// Si el último caracter es raro, quítalo
-			while (rawName.back() == '\r' || rawName.back() == '\t' || rawName.back() == ' ') {
-				rawName.pop_back();
-			}
-			secActual.setName(rawName);
-			
-			//cout<<"Se va a leer: "<<secActual.getName()<<endl; // DEBUG
+            // Si el último caracter es raro, quítalo
+            while (rawName.back() == '\r' || rawName.back() == '\t' || rawName.back() == ' ') {
+                rawName.pop_back();
+            }
+            secActual.setName(rawName);
+    
             leyendoSecuencia=true;
-			bases_actuales.clear();
-			anchoDetectado = 0;                 // reinicio ancho
-			esperarPrimeraLineaBases = true;    // la próxima línea de bases dará el ancho
-            
+            bases_actuales.clear();
+            anchoDetectado = 0;               
+            esperarPrimeraLineaBases = true;    
+
         }else if(linea[0]!='>' && leyendoSecuencia==false){
-			cout<<"El archivo no tiene el formato requerido";
-			return;
-		}else{
-				if (esperarPrimeraLineaBases) {
-				anchoDetectado = (linea.size())-1;  // ancho = primera línea de bases
-				esperarPrimeraLineaBases = false;
-			}
+            cout<<"El archivo no tiene el formato requerido"<<endl;
+            return;
+        }else{
+                //se hizo con ayuda de chatGPT esta parte del ancho
+                if (esperarPrimeraLineaBases) {
+                anchoDetectado = (linea.size())-1;  
+                esperarPrimeraLineaBases = false;
+            }
             // Línea de bases
             for (char c : linea) {
                 // guardar letra en la lista de bases
-				if(c != 'A' && c != 'C' && c != 'G' && c != 'T' && c != 'U' &&
-				c != 'R' && c != 'Y' && c != 'K' && c != 'M' && c != 'S' &&
-				c != 'W' && c != 'B' && c != 'D' && c != 'H' && c != 'V' &&
-				c != 'N' && c != 'X' && c != '-'){
-					if (c == ' ' || c == '\0' || c == '\r' || c == '\t' ){ // quitamos espacio catalina explica
-						//Para que no ingrese el ultimo caracter de la secuencia
-						continue;
-					}else{
-						cout<<"La base: "<<c<<" NO SE RECONOCE!"<<endl;
-						cout<<"No se cargó el archivo. "<<endl;
-						return;
-					}
-				}else{
-					bases_actuales.push_back(c);
-				}
+                if(c != 'A' && c != 'C' && c != 'G' && c != 'T' && c != 'U' &&
+                c != 'R' && c != 'Y' && c != 'K' && c != 'M' && c != 'S' &&
+                c != 'W' && c != 'B' && c != 'D' && c != 'H' && c != 'V' &&
+                c != 'N' && c != 'X' && c != '-'){
+                    if (c == '\0' || c == '\r' || c == '\t' ){ // quitamos espacio
+                        //Para que no ingrese el ultimo caracter de la secuencia
+                        continue;
+                    }else{
+                        cout<<"La base: "<<c<<" NO SE RECONOCE!"<<endl;
+                        cout<<"No se cargó el archivo. "<<endl;
+                        return;
+                    }
+                }else{
+                    bases_actuales.push_back(c);
+                }
             }
         } 
     }
 
     // Guardar la última
     if (leyendoSecuencia) {
-		secActual.setAncho(anchoDetectado);
+        secActual.setAncho(anchoDetectado);
         secActual.setCode(bases_actuales);
         list_secuencia.push_back(secActual);
     }
@@ -109,30 +109,7 @@ void Sistema::cargar(string nombreArchivo) {
     } else {
         cout<<list_secuencia.size()<<"secuencias cargadas correctamente desde " <<nombreArchivo<< "."<<endl;
     }
-
-	//PRUEBA RECORRIDO
-	
-    list<Secuencia>::iterator itSeq = this->list_secuencia.begin();
-    for (; itSeq != this->list_secuencia.end(); ++itSeq) {
-
-        // Obtener y mostrar el nombre (getName() devuelve por valor según tu última versión)
-        string nombre = itSeq->getName();
-        cout << "Secuencia: " << nombre << endl;
-
-        // Obtener la lista de caracteres (se hace copia si getCode() devuelve por valor)
-        list<char> codigo = itSeq->getCode();
-
-        // Iterar y mostrar cada carácter
-        list<char>::iterator itChar = codigo.begin();
-        for (; itChar != codigo.end(); ++itChar) {
-            cout << *itChar;
-        }
-
-        cout << endl << endl; // separación entre secuencias
-    }
-	  
 }
-
 
 
 void Sistema::listar(){
@@ -143,7 +120,7 @@ void Sistema::listar(){
 
     // Recorre cada secuencia
     for (; it != this->list_secuencia.end(); ++it) {
-		//cout << "[DEBUG] Recuperado de la lista: " << it->getName() << endl;
+       
         bool completa = true;
         bool codigo[18] = { false }; // índices 0..17 (0..4 primarias, 5..16 ambig, 17 = '-')
         bool hayPrincipales = false;
@@ -172,7 +149,7 @@ void Sistema::listar(){
         vector<vector<char>> matriz;
         list<char>::iterator it3 = codigoList.begin();
 
-        // Segundo recorrido: analizar códigos IUPAC y llenar matriz o marcar codigo[]
+        // Segundo recorrido: analizar códigos  y llenar matriz si no hay bases primaria o marcar codigo[] si no se ha marcado ninguna de las que abarca
         for (; it3 != codigoList.end(); ++it3) {
             char ch = *it3;
 
@@ -183,6 +160,7 @@ void Sistema::listar(){
                         matriz.push_back(vector<char>{'A','G'});
                     } else {
                         codigo[5] = true;
+                        
                     }
                 }
             } else if (ch == 'Y') {
@@ -192,6 +170,7 @@ void Sistema::listar(){
                         matriz.push_back(vector<char>{'C','T','U'});
                     } else {
                         codigo[6] = true;
+                        
                     }
                 }
             } else if (ch == 'K') {
@@ -201,6 +180,7 @@ void Sistema::listar(){
                         matriz.push_back(vector<char>{'T','G','U'});
                     } else {
                         codigo[7] = true;
+                       
                     }
                 }
             } else if (ch == 'M') {
@@ -210,6 +190,7 @@ void Sistema::listar(){
                         matriz.push_back(vector<char>{'A','C'});
                     } else {
                         codigo[8] = true;
+                       
                     }
                 }
             } else if (ch == 'S') {
@@ -219,6 +200,7 @@ void Sistema::listar(){
                         matriz.push_back(vector<char>{'G','C'});
                     } else {
                         codigo[9] = true;
+                       
                     }
                 }
             } else if (ch == 'W') {
@@ -228,6 +210,7 @@ void Sistema::listar(){
                         matriz.push_back(vector<char>{'A','T','U'});
                     } else {
                         codigo[10] = true;
+                    
                     }
                 }
             } else if (ch == 'B') {
@@ -237,6 +220,7 @@ void Sistema::listar(){
                         matriz.push_back(vector<char>{'C','G','T','U'});
                     } else {
                         codigo[11] = true;
+                      
                     }
                 }
             } else if (ch == 'D') {
@@ -246,6 +230,7 @@ void Sistema::listar(){
                         matriz.push_back(vector<char>{'A','G','T','U'});
                     } else {
                         codigo[12] = true;
+                      
                     }
                 }
             } else if (ch == 'H') {
@@ -255,6 +240,7 @@ void Sistema::listar(){
                         matriz.push_back(vector<char>{'A','C','T','U'});
                     } else {
                         codigo[13] = true;
+                       
                     }
                 }
             } else if (ch == 'V') {
@@ -263,32 +249,34 @@ void Sistema::listar(){
                     if (!hayPrincipales) {
                         matriz.push_back(vector<char>{'A','C','G'});
                     } else {
+
                         codigo[14] = true;
                     }
                 }
-            } else if (ch == 'N') {
+                } else if (ch == 'N') {
                 completa = false;
                 if (!hayPrincipales) {
-                    matriz.push_back(vector<char>{'A','C','G','T','U'});
-                    codigo[15] = true;
-                } else {
-                    codigo[15] = true;
-                }
-            } else if (ch == 'X') {
-                completa = false;
-                if (!hayPrincipales) {
-                    matriz.push_back(vector<char>{'A','C','G','T','U'});
-                    codigo[16] = true;
-                } else {
-                    codigo[16] = true;
-                }
-            } else if (ch == '-') {
-                completa = false;
-                if (!hayPrincipales) {
-                    matriz.push_back(vector<char>{'A','C','G','T','U'});
-                    codigo[17] = true;
-                } else {
-                    codigo[17] = true;
+                        matriz.push_back(vector<char>{'A','C','G','T','U'});
+                        codigo[15] = true;
+                    } else {
+                        codigo[15] = true;
+                    }
+                } else if (ch == 'X') {
+                    completa = false;
+                    if (!hayPrincipales) {
+                        matriz.push_back(vector<char>{'A','C','G','T','U'});
+                        codigo[16] = true;
+                    } else {
+                        codigo[16] = true;
+                       
+                    }
+                 } else if (ch == '-') {
+                    completa = false;
+                    if (!hayPrincipales) {
+                        matriz.push_back(vector<char>{'A','C','G','T','U'});
+                        codigo[17] = true;
+                    } else {
+                        codigo[17] = true;
                 }
             }
         } // fin segundo recorrido
@@ -322,45 +310,46 @@ void Sistema::listar(){
                 }
             }
 
-            // sumo hasta cubrir la longitud (cant)
-            for (int z = 0; z < 5 && suma < cant; ++z) {
+            int z = 0;
+            // sumo hasta cubrir la longitud (cant) y la cantidad de bases es las veces que sume
+            for (z = 0; z < 5 && suma < cant; ++z) {
                 if (cont[z] != 0) {
                     suma = suma + cont[z];
                     ++contador;
                 }
             }
-
-            cout << "Secuencia " << it->getName()<< " contiene al menos " << contador << " bases." << endl;
-			
-			//cout << "[DEBUG] Recuperado de la lista: " << it->getName() << endl;
+            
+            if(z==1){
+                cout << "Secuencia " << it->getName()<< " contiene al menos " << contador << " bases." << endl;
+            }else{
+                cout << "Secuencia " << it->getName()<< " contiene " << contador << " bases." << endl;
+            }
+            
 
         } else {
             int diferentes = 0;
-			// contar sólo bases primarias (A,C,G,T,U) — índices 0..4
-			for (int k = 0; k < 5; ++k) {
-				if (codigo[k]) ++diferentes;
-			}
+            for (int k = 0; k < 18; ++k) {
+                if (codigo[k]) ++diferentes;
+            }
 
-			if (completa) {
-				cout << "Secuencia " << it->getName() << " contiene " << diferentes << " bases." << endl;
-				//cout << "[DEBUG] Recuperado de la lista: " << it->getName() << endl;
-			} else {
-				cout << "Secuencia " << it->getName() << " contiene al menos " << diferentes << " bases." << endl;
-				
-				//cout << "[DEBUG] Recuperado de la lista: " << it->getName() << endl;
-			}
+            if (completa) {
+                cout << "Secuencia " << it->getName() << " contiene " << diferentes << " bases." << endl;
+                
+            } else{
+                cout << "Secuencia " << it->getName() << " contiene al menos " << diferentes << " bases." << endl;
+
+            }
 
         }
 
     } // fin for secuencias
-	
 }
 
 
 void Sistema::histograma(string secuencia){
     //busca la secuencia por el nombre
     const Secuencia* encontrada=0;
-	list<Secuencia>::iterator itSeq = this->list_secuencia.begin();
+    list<Secuencia>::iterator itSeq = this->list_secuencia.begin();
     for(; itSeq != this->list_secuencia.end(); itSeq++){
         if(itSeq->getName()==secuencia){
             encontrada=&(*itSeq);
@@ -426,6 +415,7 @@ void Sistema::histograma(string secuencia){
     cout<<"X : "<<cX<<endl;
     cout<<"- : "<<cGuion<<endl;
 }
+
 void Sistema::subsecuencia(string subsecuencia_buscada){ // compaginar con definición en el header
      /*
     Pasos:
@@ -436,8 +426,6 @@ void Sistema::subsecuencia(string subsecuencia_buscada){ // compaginar con defin
         Repetir hasta acabar las secuencias del sistema
         Mostrar resultado final: según el conteo total (0 = no existe, >0 = se repite X veces)
     */
-
-    cout << "Hay " << this->list_secuencia.size() << " secuencias cargadas en memoria" << endl;
 
     int conteo_total = 0;
     int longitud_busqueda = static_cast<int>(subsecuencia_buscada.length());
@@ -463,10 +451,68 @@ void Sistema::subsecuencia(string subsecuencia_buscada){ // compaginar con defin
 
             // Comparar carácter por carácter
             while (i < longitud_busqueda && temp_it != codigo_end) {
-                if (*temp_it != subsecuencia_buscada[i]) {
-                    coincide = false;
-                    break;
-                }
+                if(*temp_it=='A' || *temp_it=='C' || *temp_it=='G' ||*temp_it=='T' ||*temp_it=='U' || *temp_it=='X' || *temp_it=='-'){
+                    if (*temp_it != subsecuencia_buscada[i]) {
+                        coincide = false;
+                        break;
+                    }
+                }else if (*temp_it=='R') {
+                    if (!(subsecuencia_buscada[i]=='A' || subsecuencia_buscada[i]=='G' || subsecuencia_buscada[i]=='R')) {
+                        coincide = false;
+                        break;
+                    }
+                } else if( *temp_it=='Y'){
+                    if (!(subsecuencia_buscada[i]=='C' || subsecuencia_buscada[i]=='T'||  subsecuencia_buscada[i]=='U' ||subsecuencia_buscada[i]=='Y') ) {
+                        coincide = false;
+                        break;
+                    }
+                } else if( *temp_it=='K'){
+                    if (!(subsecuencia_buscada[i]=='G' || subsecuencia_buscada[i]=='T'||  subsecuencia_buscada[i]=='U' || subsecuencia_buscada[i]=='K')) {
+                        coincide = false;
+                        break;
+                    }
+                } else if (*temp_it == 'M') {
+                    if (!(subsecuencia_buscada[i] == 'A' || subsecuencia_buscada[i] == 'C'|| subsecuencia_buscada[i]=='M')) {
+                        coincide = false;
+                        break;
+                    }
+                } else if (*temp_it == 'S') {
+                    if (!(subsecuencia_buscada[i] == 'C' || subsecuencia_buscada[i] == 'G' || subsecuencia_buscada[i]=='S')) {
+                        coincide = false;
+                        break;
+                    }
+                } else if (*temp_it == 'W') {
+                    if (!(subsecuencia_buscada[i] == 'A' || subsecuencia_buscada[i] == 'T' || subsecuencia_buscada[i] == 'U' || subsecuencia_buscada[i]=='W')) {
+                        coincide = false;
+                        break;
+                    }
+                } else if (*temp_it == 'B') {
+                    if (!(subsecuencia_buscada[i] == 'C' || subsecuencia_buscada[i] == 'G' || subsecuencia_buscada[i] == 'T' || subsecuencia_buscada[i] == 'U' || subsecuencia_buscada[i]=='B')) {
+                        coincide = false;
+                        break;
+                    }
+                } else if (*temp_it == 'D') {
+                    if (!(subsecuencia_buscada[i] == 'A' || subsecuencia_buscada[i] == 'G' || subsecuencia_buscada[i] == 'T' || subsecuencia_buscada[i] == 'U' || subsecuencia_buscada[i]=='D')) {
+                        coincide = false;
+                        break;
+                    }
+                } else if (*temp_it == 'H') {
+                    if (!(subsecuencia_buscada[i] == 'A' || subsecuencia_buscada[i] == 'C' || subsecuencia_buscada[i] == 'T' || subsecuencia_buscada[i] == 'U' || subsecuencia_buscada[i]=='H')) {
+                        coincide = false;
+                        break;
+                    }
+                } else if (*temp_it == 'V') {
+                    if (!(subsecuencia_buscada[i] == 'A' || subsecuencia_buscada[i] == 'C' || subsecuencia_buscada[i] == 'G' || subsecuencia_buscada[i]=='V')) {
+                        coincide = false;
+                        break;
+                    }
+                } else if (*temp_it == 'N') {
+                    if (!(subsecuencia_buscada[i] == 'A' || subsecuencia_buscada[i] == 'C' || subsecuencia_buscada[i] == 'G' || subsecuencia_buscada[i] == 'T' || subsecuencia_buscada[i] == 'U' || subsecuencia_buscada[i]=='N')) {
+                        coincide = false;
+                        break;
+                    }
+                } 
+
                 ++temp_it;
                 ++i;
             }
@@ -520,9 +566,69 @@ void Sistema::enmascarar(string subsecuencia) {
             list<char>::iterator temp = it;
             size_t i = 0;
             bool coincide = true;
-            while (i < L) {
-                if (temp == codigo.end()) { coincide = false; break; }
-                if (*temp != subsecuencia[i]) { coincide = false; break; }
+            while (i < L && temp != codigo.end()) {
+
+                if(*temp=='A' || *temp=='C' || *temp=='G' ||*temp=='T' ||*temp=='U' || *temp=='X' || *temp=='-'){
+                    if (*temp != subsecuencia[i]) {
+                        coincide = false;
+                        break;
+                    }
+                }else if (*temp=='R') {
+                    if (!(subsecuencia[i]=='A' || subsecuencia[i]=='G' || subsecuencia[i]=='R')) {
+                        coincide = false;
+                        break;
+                    }
+                } else if( *temp=='Y'){
+                    if (!(subsecuencia[i]=='C' || subsecuencia[i]=='T'||  subsecuencia[i]=='U' ||subsecuencia[i]=='Y') ) {
+                        coincide = false;
+                        break;
+                    }
+                } else if( *temp=='K'){
+                    if (!(subsecuencia[i]=='G' || subsecuencia[i]=='T'||  subsecuencia[i]=='U' || subsecuencia[i]=='K')) {
+                        coincide = false;
+                        break;
+                    }
+                } else if (*temp== 'M') {
+                    if (!(subsecuencia[i] == 'A' || subsecuencia[i] == 'C'|| subsecuencia[i]=='M')) {
+                        coincide = false;
+                        break;
+                    }
+                } else if (*temp== 'S') {
+                    if (!(subsecuencia[i] == 'C' || subsecuencia[i] == 'G' || subsecuencia[i]=='S')) {
+                        coincide = false;
+                        break;
+                    }
+                } else if (*temp == 'W') {
+                    if (!(subsecuencia[i] == 'A' || subsecuencia[i] == 'T' || subsecuencia[i] == 'U' || subsecuencia[i]=='W')) {
+                        coincide = false;
+                        break;
+                    }
+                } else if (*temp == 'B') {
+                    if (!(subsecuencia[i] == 'C' || subsecuencia[i] == 'G' || subsecuencia[i] == 'T' || subsecuencia[i] == 'U' || subsecuencia[i]=='B')) {
+                        coincide = false;
+                        break;
+                    }
+                } else if (*temp== 'D') {
+                    if (!(subsecuencia[i] == 'A' || subsecuencia[i] == 'G' || subsecuencia[i] == 'T' || subsecuencia[i] == 'U' || subsecuencia[i]=='D')) {
+                        coincide = false;
+                        break;
+                    }
+                } else if (*temp == 'H') {
+                    if (!(subsecuencia[i] == 'A' || subsecuencia[i] == 'C' || subsecuencia[i] == 'T' || subsecuencia[i] == 'U' || subsecuencia[i]=='H')) {
+                        coincide = false;
+                        break;
+                    }
+                } else if (*temp == 'V') {
+                    if (!(subsecuencia[i] == 'A' || subsecuencia[i] == 'C' || subsecuencia[i] == 'G' || subsecuencia[i]=='V')) {
+                        coincide = false;
+                        break;
+                    }
+                } else if (*temp== 'N') {
+                    if (!(subsecuencia[i] == 'A' || subsecuencia[i] == 'C' || subsecuencia[i] == 'G' || subsecuencia[i] == 'T' || subsecuencia[i] == 'U' || subsecuencia[i]=='N')) {
+                        coincide = false;
+                        break;
+                    }
+                } 
                 ++temp; ++i;
             }
 

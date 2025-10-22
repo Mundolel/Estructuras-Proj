@@ -18,7 +18,7 @@ int main(){
 
         //indicador de linea de comando
         cout<<"$ "; 
-        
+
         //Reinician las variables para evitar basura de comandos anteriores
         parametro="";
         extra="";
@@ -37,48 +37,47 @@ int main(){
         //Validacion de comandos con su respectiva cantidad de parametros
         if(comando=="cargar" && !parametro.empty() && extra.empty()){
             cout<<"Exito. El comando esta bien"<<endl;
-			sistema.cargar(parametro);
+            sistema.cargar(parametro);
         }
         else if(comando=="listar_secuencias" && parametro.empty()){
             cout<<"Exito. El comando esta bien"<<endl;
-			if(sistema.estaVacio()){
-				cout<<"Aun no hay secuencias cargadas"<<endl;
-			}else{
-				sistema.listar();
-			}
+            if(sistema.estaVacio()){
+                cout<<"Aun no hay secuencias cargadas"<<endl;
+            }else{
+                sistema.listar();
+            }
         }
         else if(comando=="histograma" && !parametro.empty() && extra.empty()){
             cout<<"Exito. El comando esta bien"<<endl;
-			if(sistema.estaVacio()){
-				cout<<"Aun no hay secuencias cargadas"<<endl;
-			}else{
-				sistema.histograma(parametro);
-			}
+            if(sistema.estaVacio()){
+                cout<<"Aun no hay secuencias cargadas"<<endl;
+            }else{
+                sistema.histograma(parametro);
+            }
         }
         else if(comando=="es_subsecuencia" && !parametro.empty() && extra.empty()){
             cout<<"Exito. El comando esta bien"<<endl;
-			if(sistema.estaVacio()){
-				cout<<"Aun no hay secuencias cargadas"<<endl;
-			}else{
-				cout<<"Se ejecuta comando con parámetro: "<<parametro<<endl;
-				sistema.subsecuencia(parametro);
-			}
+            if(sistema.estaVacio()){
+                cout<<"Aun no hay secuencias cargadas"<<endl;
+            }else{
+                sistema.subsecuencia(parametro);
+            }
         }
         else if(comando=="enmascarar" && !parametro.empty() && extra.empty()){
             cout<<"Exito. El comando esta bien"<<endl;
-			if(sistema.estaVacio()){
-				cout<<"Aun no hay secuencias cargadas"<<endl;
-			}else{
-				sistema.enmascarar(parametro);
-			}
+            if(sistema.estaVacio()){
+                cout<<"Aun no hay secuencias cargadas"<<endl;
+            }else{
+                sistema.enmascarar(parametro);
+            }
         }
         else if(comando=="guardar" && !parametro.empty() && extra.empty()){
             cout<<"Exito. El comando esta bien"<<endl;
-			if(sistema.estaVacio()){
-				cout<<"Aun no hay secuencias cargadas"<<endl;
-			}else{
-				sistema.guardar(parametro);
-			}
+            if(sistema.estaVacio()){
+                cout<<"Aun no hay secuencias cargadas"<<endl;
+            }else{
+                sistema.guardar(parametro);
+            }
         }
         else if(comando=="codificar" && !parametro.empty() && extra.empty()){
             cout<<"Exito. El comando esta bien"<<endl;
