@@ -80,11 +80,17 @@ int main(){
             }
         }
         else if(comando=="codificar" && !parametro.empty() && extra.empty()){
-            cout<<"Exito. El comando esta bien"<<endl;
-        }
-        else if(comando=="decodificar" && !parametro.empty() && extra.empty()){
-            cout<<"Exito. El comando esta bien"<<endl;
-        }
+			cout<<"Exito. El comando esta bien"<<endl;
+			if(sistema.estaVacio()){
+				cout<<"No hay secuencias cargadas en memoria"<<endl;
+			}else{
+				sistema.codificar(parametro);
+			}
+		}
+		else if(comando=="decodificar" && !parametro.empty() && extra.empty()){
+			cout<<"Exito. El comando esta bien"<<endl;
+			sistema.decodificar(parametro);
+		}
         else if(comando=="ruta_mas_corta" && !parametro.empty() && !extra.empty() && !extra2.empty() && !extra3.empty()  && !extra4.empty() && extra5.empty()){
             //Se realizo con ayuda de chatGPT la estrutura del try catch al preguntarle como convertir un string a un entero, y se modifico adecuandolo a las variables y mensajes requeridos en este preyecto
             try {

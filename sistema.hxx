@@ -702,4 +702,262 @@ void Sistema::guardar(string nombreArchivo){
 }
 
 
+// ============================================================================
+// FUNCIÓN AUXILIAR: Calcula frecuencias globales de todas las secuencias
+// ============================================================================
+map<char, unsigned long long> Sistema::calcularFrecuenciasGlobales() {
+    map<char, unsigned long long> frecuencias;
+    
+    // Inicializar todos los contadores en 0
+    const char simbolos[] = {'A','C','G','T','U','R','Y','K','M','S','W','B','D','H','V','N','X','-'};
+    for(char c : simbolos) {
+        frecuencias[c] = 0;
+    }
+    
+    // Recorrer todas las secuencias y contar
+    for(list<Secuencia>::iterator itSeq = list_secuencia.begin(); 
+        itSeq != list_secuencia.end(); ++itSeq) {
+        
+        list<char> bases = itSeq->getCode();
+        for(list<char>::iterator it = bases.begin(); it != bases.end(); ++it) {
+            char ch = *it;
+            if(frecuencias.find(ch) != frecuencias.end()) {
+                frecuencias[ch]++;
+            }
+        }
+    }
+    
+    // Eliminar símbolos con frecuencia 0 (no están presentes)
+    map<char, unsigned long long> frecuenciasFiltradas;
+    for(map<char, unsigned long long>::iterator it = frecuencias.begin(); 
+        it != frecuencias.end(); ++it) {
+        if(it->second > 0) {
+            frecuenciasFiltradas[it->first] = it->second;
+        }
+    }
+    
+    return frecuenciasFiltradas;
+}
+
+// ============================================================================
+// CODIFICAR: Comprime las secuencias usando Huffman y guarda en .fabin
+// ============================================================================
+void Sistema::codificar(string nombreArchivo) {
+    // Verificar que hay secuencias cargadas
+    if(list_secuencia.empty()) {
+        cout << "No hay secuencias cargadas en memoria." << endl;
+        return;
+    }
+    
+    // 1. Calcular frecuencias globales
+    map<char, unsigned long long> frecuencias = calcularFrecuenciasGlobales();
+    
+    if(frecuencias.empty()) {
+        cout << "No se pueden guardar las secuencias cargadas en " << nombreArchivo << "." << endl;
+        return;
+    }
+    
+    // 2. Construir árbol de Huffman
+    ArbolHuffman arbol;
+    map<char, long long> frecLongLong;
+    for(map<char, unsigned long long>::iterator it = frecuencias.begin(); 
+        it != frecuencias.end(); ++it) {
+        frecLongLong[it->first] = static_cast<long long>(it->second);
+    }
+    arbol.construirDesdeFrecuencias(frecLongLong);
+    
+    // 3. Generar tabla de códigos
+    map<char, string> tablaCodigos;
+    arbol.generarCodigos(tablaCodigos);
+    
+    // 4. Abrir archivo binario para escritura
+    ofstream out(nombreArchivo, ios::binary);
+    if(!out.is_open()) {
+        cout << "No se pueden guardar las secuencias cargadas en " << nombreArchivo << "." << endl;
+        return;
+    }
+    
+    // 5. Escribir header del archivo .fabin
+    
+    // n: cantidad de bases diferentes (2 bytes)
+    unsigned short n = static_cast<unsigned short>(frecuencias.size());
+    out.write(reinterpret_cast<const char*>(&n), 2);
+    
+    // Para cada símbolo: ci (1 byte) y fi (8 bytes)
+    for(map<char, unsigned long long>::iterator it = frecuencias.begin(); 
+        it != frecuencias.end(); ++it) {
+        char simbolo = it->first;
+        unsigned long long freq = it->second;
+        out.write(&simbolo, 1);
+        out.write(reinterpret_cast<const char*>(&freq), 8);
+    }
+    
+    // ns: cantidad de secuencias (4 bytes)
+    unsigned int ns = static_cast<unsigned int>(list_secuencia.size());
+    out.write(reinterpret_cast<const char*>(&ns), 4);
+    
+    // 6. Para cada secuencia, escribir metadatos y datos codificados
+    for(list<Secuencia>::iterator itSeq = list_secuencia.begin(); 
+        itSeq != list_secuencia.end(); ++itSeq) {
+        
+        // li: longitud del nombre (2 bytes)
+        string nombre = itSeq->getName();
+        unsigned short longitudNombre = static_cast<unsigned short>(nombre.length());
+        out.write(reinterpret_cast<const char*>(&longitudNombre), 2);
+        
+        // sij: caracteres del nombre
+        out.write(nombre.c_str(), longitudNombre);
+        
+        // wi: longitud de la secuencia (8 bytes)
+        list<char> bases = itSeq->getCode();
+        unsigned long long longitudSecuencia = static_cast<unsigned long long>(bases.size());
+        out.write(reinterpret_cast<const char*>(&longitudSecuencia), 8);
+        
+        // xi: ancho de línea (2 bytes)
+        unsigned short ancho = static_cast<unsigned short>(itSeq->getAncho());
+        out.write(reinterpret_cast<const char*>(&ancho), 2);
+        
+        // binary_code: secuencia codificada en binario
+        string bitstream = "";
+        for(list<char>::iterator it = bases.begin(); it != bases.end(); ++it) {
+            bitstream += tablaCodigos[*it];
+        }
+        
+        // Completar con 0s hasta múltiplo de 8
+        while(bitstream.length() % 8 != 0) {
+            bitstream += "0";
+        }
+        
+        // Convertir bitstream a bytes y escribir
+        for(size_t i = 0; i < bitstream.length(); i += 8) {
+            unsigned char byte = 0;
+            for(int j = 0; j < 8; ++j) {
+                if(bitstream[i + j] == '1') {
+                    byte |= (1 << (7 - j));
+                }
+            }
+            out.write(reinterpret_cast<const char*>(&byte), 1);
+        }
+    }
+    
+    out.close();
+    
+    if(!out) {
+        cout << "No se pueden guardar las secuencias cargadas en " << nombreArchivo << "." << endl;
+    } else {
+        cout << "Secuencias codificadas y almacenadas en " << nombreArchivo << "." << endl;
+    }
+}
+
+// ============================================================================
+// DECODIFICAR: Lee un archivo .fabin y carga las secuencias en memoria
+// ============================================================================
+void Sistema::decodificar(string nombreArchivo) {
+    // Abrir archivo binario
+    ifstream in(nombreArchivo, ios::binary);
+    if(!in.is_open()) {
+        cout << "No se pueden cargar las secuencias desde " << nombreArchivo << "." << endl;
+        return;
+    }
+    
+    try {
+        // Limpiar secuencias previas
+        list_secuencia.clear();
+        
+        // 1. Leer n: cantidad de símbolos (2 bytes)
+        unsigned short n;
+        in.read(reinterpret_cast<char*>(&n), 2);
+        
+        // 2. Leer tabla de frecuencias
+        map<char, unsigned long long> frecuencias;
+        for(int i = 0; i < n; ++i) {
+            char simbolo;
+            unsigned long long freq;
+            in.read(&simbolo, 1);
+            in.read(reinterpret_cast<char*>(&freq), 8);
+            frecuencias[simbolo] = freq;
+        }
+        
+        // 3. Reconstruir árbol de Huffman
+        ArbolHuffman arbol;
+        map<char, long long> frecLongLong;
+        for(map<char, unsigned long long>::iterator it = frecuencias.begin(); 
+            it != frecuencias.end(); ++it) {
+            frecLongLong[it->first] = static_cast<long long>(it->second);
+        }
+        arbol.construirDesdeFrecuencias(frecLongLong);
+        
+        // 4. Leer ns: cantidad de secuencias (4 bytes)
+        unsigned int ns;
+        in.read(reinterpret_cast<char*>(&ns), 4);
+        
+        // 5. Para cada secuencia
+        for(unsigned int s = 0; s < ns; ++s) {
+            // Leer longitud del nombre (2 bytes)
+            unsigned short longitudNombre;
+            in.read(reinterpret_cast<char*>(&longitudNombre), 2);
+            
+            // Leer nombre
+            char* bufferNombre = new char[longitudNombre + 1];
+            in.read(bufferNombre, longitudNombre);
+            bufferNombre[longitudNombre] = '\0';
+            string nombre(bufferNombre);
+            delete[] bufferNombre;
+            
+            // Leer longitud de secuencia (8 bytes)
+            unsigned long long longitudSecuencia;
+            in.read(reinterpret_cast<char*>(&longitudSecuencia), 8);
+            
+            // Leer ancho (2 bytes)
+            unsigned short ancho;
+            in.read(reinterpret_cast<char*>(&ancho), 2);
+            
+            // Leer y decodificar datos binarios
+            list<char> basesDecodificadas;
+            Nodo* nodoActual = arbol.raiz;
+            unsigned long long basesLeidas = 0;
+            
+            while(basesLeidas < longitudSecuencia) {
+                // Leer un byte
+                unsigned char byte;
+                in.read(reinterpret_cast<char*>(&byte), 1);
+                
+                // Procesar cada bit del byte
+                for(int bit = 7; bit >= 0 && basesLeidas < longitudSecuencia; --bit) {
+                    bool esCero = ((byte >> bit) & 1) == 0;
+                    
+                    if(esCero) {
+                        nodoActual = nodoActual->izquierdo;
+                    } else {
+                        nodoActual = nodoActual->derecho;
+                    }
+                    
+                    // Si llegamos a una hoja, decodificamos un símbolo
+                    if(nodoActual->esHoja()) {
+                        basesDecodificadas.push_back(nodoActual->simbolo);
+                        basesLeidas++;
+                        nodoActual = arbol.raiz; // Volver a la raíz
+                    }
+                }
+            }
+            
+            // Crear y agregar la secuencia
+            Secuencia sec;
+            sec.setName(nombre);
+            sec.setCode(basesDecodificadas);
+            sec.setAncho(ancho);
+            list_secuencia.push_back(sec);
+        }
+        
+        in.close();
+        cout << "Secuencias decodificadas desde " << nombreArchivo << " y cargadas en memoria." << endl;
+        
+    } catch(...) {
+        in.close();
+        cout << "No se pueden cargar las secuencias desde " << nombreArchivo << "." << endl;
+        list_secuencia.clear();
+    }
+}
+
+
 #endif
