@@ -91,30 +91,36 @@ int main(){
 			cout<<"Exito. El comando esta bien"<<endl;
 			sistema.decodificar(parametro);
 		}
-        else if(comando=="ruta_mas_corta" && !parametro.empty() && !extra.empty() && !extra2.empty() && !extra3.empty()  && !extra4.empty() && extra5.empty()){
-            //Se realizo con ayuda de chatGPT la estrutura del try catch al preguntarle como convertir un string a un entero, y se modifico adecuandolo a las variables y mensajes requeridos en este preyecto
-            try {
-                i= stoi(extra);
-                j=stoi(extra2);
-                x=stoi(extra3);
-                y=stoi(extra4);
-                cout<<"Exito. El comando esta bien"<<endl;
-            } catch (invalid_argument&) {
-                //Si alguno de los parametros no es numero valido
-                cout << "Error: El comando no es valido. Vuelve a intentarlo o apoyate en el comando 'ayuda' para ver las opciones de comandos" << endl;
-            }
-        } 
-        else if(comando=="base_remota" && !parametro.empty() && !extra.empty() && !extra2.empty() && extra3.empty()){
-                //Se realizo con ayuda de chatGPT la estrutura del try catch al preguntarle como convertir un string a un entero, y se modifico adecuandolo a las variables y mensajes requeridos en este preyecto
-            try {
-                i= stoi(extra);
-                j=stoi(extra2);
-                cout<<"Exito. El comando esta bien"<<endl;
-            } catch (invalid_argument&) {
-                //Si alguno de los parametros no es numero valido
-                cout << "Error: El comando no es valido. Vuelve a intentarlo o apoyate en el comando 'ayuda' para ver las opciones de comandos" << endl;
-            }
-        } 
+		else if(comando=="ruta_mas_corta" && !parametro.empty() && !extra.empty() && !extra2.empty() && !extra3.empty() && !extra4.empty() && extra5.empty()){
+			try {
+				i = stoi(extra);
+				j = stoi(extra2);
+				x = stoi(extra3);
+				y = stoi(extra4);
+				cout << "Exito. El comando esta bien" << endl;
+				if(sistema.estaVacio()){
+					cout << "No hay secuencias cargadas en memoria" << endl;
+				} else {
+					sistema.rutaMasCorta(parametro, i, j, x, y);
+				}
+			} catch (invalid_argument&) {
+				cout << "Error: El comando no es valido. Vuelve a intentarlo o apoyate en el comando 'ayuda' para ver las opciones de comandos" << endl;
+			}
+		}
+		else if(comando=="base_remota" && !parametro.empty() && !extra.empty() && !extra2.empty() && extra3.empty()){
+			try {
+				i = stoi(extra);
+				j = stoi(extra2);
+				cout << "Exito. El comando esta bien" << endl;
+				if(sistema.estaVacio()){
+					cout << "No hay secuencias cargadas en memoria" << endl;
+				} else {
+					sistema.baseRemota(parametro, i, j);
+				}
+			} catch (invalid_argument&) {
+				cout << "Error: El comando no es valido. Vuelve a intentarlo o apoyate en el comando 'ayuda' para ver las opciones de comandos" << endl;
+			}
+		}
         else if(comando=="ayuda"){ 
             // Se listan los comandos disponibles
             if (parametro.empty()) {

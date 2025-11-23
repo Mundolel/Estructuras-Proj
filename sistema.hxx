@@ -959,5 +959,184 @@ void Sistema::decodificar(string nombreArchivo) {
     }
 }
 
+// ============================================================================
+// RUTA MÁS CORTA: Encuentra la ruta más corta entre dos bases en una secuencia
+// ============================================================================
+void Sistema::rutaMasCorta(string descripcionSecuencia, int i, int j, int x, int y) {
+    // Buscar la secuencia
+    const Secuencia* encontrada = nullptr;
+    list<Secuencia>::iterator itSeq = list_secuencia.begin();
+    for(; itSeq != list_secuencia.end(); ++itSeq) {
+        if(itSeq->getName() == descripcionSecuencia) {
+            encontrada = &(*itSeq);
+            break;
+        }
+    }
+    
+    // Verificar si la secuencia existe
+    if(encontrada == nullptr) {
+        cout << "La secuencia " << descripcionSecuencia << " no existe." << endl;
+        return;
+    }
+    
+    // Construir el grafo desde la secuencia
+    Grafo grafo;
+    grafo.construirDesdeSecuencia(encontrada->getCode(), encontrada->getAncho());
+    
+    // Verificar si las posiciones existen
+    if(!grafo.existeVertice(i, j)) {
+        cout << "La base en la posicion [" << i << "," << j << "] no existe." << endl;
+        return;
+    }
+    
+    if(!grafo.existeVertice(x, y)) {
+        cout << "La base en la posicion [" << x << "," << y << "] no existe." << endl;
+        return;
+    }
+    
+    // Obtener los vértices origen y destino
+    Vertice origen = grafo.obtenerVertice(i, j);
+    Vertice destino = grafo.obtenerVertice(x, y);
+    
+    // Ejecutar Dijkstra
+    pair<double, list<Vertice>> resultado = grafo.dijkstra(origen, destino);
+    double costo = resultado.first;
+    list<Vertice> ruta = resultado.second;
+    
+    // Verificar si hay ruta
+    if(costo < 0 || ruta.empty()) {
+        cout << "No existe una ruta entre [" << i << "," << j << "] y [" << x << "," << y << "]." << endl;
+        return;
+    }
+    
+    // Imprimir resultado
+    cout << "Para la secuencia " << descripcionSecuencia 
+         << ", la ruta mas corta entre la base " << origen.getBase() 
+         << " en [" << i << "," << j << "] y la base " << destino.getBase() 
+         << " en [" << x << "," << y << "] es: ";
+    
+    // Imprimir la ruta
+    list<Vertice>::iterator itRuta = ruta.begin();
+    bool primero = true;
+    for(; itRuta != ruta.end(); ++itRuta) {
+        if(!primero) {
+            cout << " -> ";
+        }
+        cout << itRuta->getBase() << "[" << itRuta->getFila() << "," << itRuta->getColumna() << "]";
+        primero = false;
+    }
+    
+    cout << ". El costo total de la ruta es: " << costo << endl;
+}
+
+// ============================================================================
+// BASE REMOTA: Encuentra la misma base más lejana desde una posición dada
+// VERSIÓN OPTIMIZADA: Un solo Dijkstra desde el origen
+// ============================================================================
+void Sistema::baseRemota(string descripcionSecuencia, int i, int j) {
+    // Buscar la secuencia
+    const Secuencia* encontrada = nullptr;
+    list<Secuencia>::iterator itSeq = list_secuencia.begin();
+    for(; itSeq != list_secuencia.end(); ++itSeq) {
+        if(itSeq->getName() == descripcionSecuencia) {
+            encontrada = &(*itSeq);
+            break;
+        }
+    }
+    
+    // Verificar si la secuencia existe
+    if(encontrada == nullptr) {
+        cout << "La secuencia " << descripcionSecuencia << " no existe." << endl;
+        return;
+    }
+    
+    // Construir el grafo desde la secuencia
+    Grafo grafo;
+    grafo.construirDesdeSecuencia(encontrada->getCode(), encontrada->getAncho());
+    
+    // Verificar si la posición existe
+    if(!grafo.existeVertice(i, j)) {
+        cout << "La base en la posicion [" << i << "," << j << "] no existe." << endl;
+        return;
+    }
+    
+    // Obtener el vértice origen
+    Vertice origen = grafo.obtenerVertice(i, j);
+    char baseOrigen = origen.getBase();
+    
+    // Encontrar todas las bases iguales
+    list<Vertice> basesIguales = grafo.encontrarBasesIguales(baseOrigen);
+    
+    // Eliminar el origen de la lista
+    basesIguales.remove(origen);
+    
+    if(basesIguales.empty()) {
+        cout << "No hay otras bases " << baseOrigen << " en la secuencia." << endl;
+        return;
+    }
+    
+    // OPTIMIZACIÓN: Ejecutar Dijkstra UNA SOLA VEZ desde el origen
+    // y obtener distancias a TODOS los vértices
+    map<Vertice, double> distancias;
+    map<Vertice, Vertice> padres;
+    
+    // Llamar a una versión modificada de Dijkstra que retorna todas las distancias
+    grafo.dijkstraATodos(origen, distancias, padres);
+    
+    // Buscar la base igual con mayor distancia
+    double maxCosto = -1.0;
+    Vertice baseRemota;
+    
+    for(list<Vertice>::iterator it = basesIguales.begin(); it != basesIguales.end(); ++it) {
+        if(distancias.find(*it) != distancias.end()) {
+            double costo = distancias[*it];
+            if(costo > maxCosto && costo < numeric_limits<double>::infinity()) {
+                maxCosto = costo;
+                baseRemota = *it;
+            }
+        }
+    }
+    
+    // Verificar si se encontró una base remota
+    if(maxCosto < 0) {
+        cout << "No se pudo encontrar una base remota." << endl;
+        return;
+    }
+    
+    // Reconstruir la ruta desde los padres
+    list<Vertice> rutaRemota;
+    Vertice actual = baseRemota;
+    
+    while(!(actual == origen)) {
+        rutaRemota.push_front(actual);
+        if(padres.find(actual) == padres.end()) {
+            cout << "No se pudo reconstruir la ruta." << endl;
+            return;
+        }
+        actual = padres[actual];
+    }
+    rutaRemota.push_front(origen);
+    
+    // Imprimir resultado
+    cout << "Para la secuencia " << descripcionSecuencia 
+         << ", la base remota esta ubicada en [" << baseRemota.getFila() 
+         << "," << baseRemota.getColumna() << "], y la ruta entre la base en ["
+         << i << "," << j << "] y la base remota en [" << baseRemota.getFila() 
+         << "," << baseRemota.getColumna() << "] es: ";
+    
+    // Imprimir la ruta
+    list<Vertice>::iterator itRuta = rutaRemota.begin();
+    bool primero = true;
+    for(; itRuta != rutaRemota.end(); ++itRuta) {
+        if(!primero) {
+            cout << " -> ";
+        }
+        cout << itRuta->getBase() << "[" << itRuta->getFila() << "," << itRuta->getColumna() << "]";
+        primero = false;
+    }
+    
+    cout << ". El costo total de la ruta es: " << maxCosto << endl;
+}
+
 
 #endif

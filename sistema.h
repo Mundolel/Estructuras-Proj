@@ -4,6 +4,7 @@
 #include <map>
 #include "secuencia.h"
 #include "ArbolHuffman.h"
+#include "Grafo.h"
 #include <list>
 
 using namespace std;
@@ -28,6 +29,10 @@ class Sistema{
     // Nuevas funciones para Huffman
     void codificar(string nombreArchivo);
     void decodificar(string nombreArchivo);
+	
+	// Funciones para Grafos 
+    void rutaMasCorta(string descripcionSecuencia, int i, int j, int x, int y);
+    void baseRemota(string descripcionSecuencia, int i, int j);
 };
 
 #include "sistema.hxx"
